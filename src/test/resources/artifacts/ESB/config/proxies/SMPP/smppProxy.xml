@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~  WSO2 Inc. licenses this file to you under the Apache License,
+ ~  Version 2.0 (the "License"); you may not use this file except
+ ~  in compliance with the License.
+ ~  You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~  Unless required by applicable law or agreed to in writing,
+ ~  software distributed under the License is distributed on an
+ ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~  KIND, either express or implied.  See the License for the
+ ~  specific language governing permissions and limitations
+ ~  under the License.
+-->
+
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+       name="SMPP"
+       transports="http,https,local"
+       statistics="disable"
+       trace="disable"
+       startOnLoad="true">
+    <target>
+        <inSequence>
+            <property name="host" expression="json-eval($.host)"/>
+            <property name="port" expression="json-eval($.port)"/>
+            <property name="systemId" expression="json-eval($.systemId)"/>
+            <property name="password" expression="json-eval($.password)"/>
+            <property name="systemType" expression="json-eval($.systemType)"/>
+            <property name="addressTon" expression="json-eval($.addressTon)"/>
+            <property name="addressNpi" expression="json-eval($.addressNpi)"/>
+            <property name="serviceType" expression="json-eval($.serviceType)"/>
+            <property name="sourceAddressTon" expression="json-eval($.sourceAddressTon)"/>
+            <property name="sourceAddressNpi" expression="json-eval($.sourceAddressNpi)"/>
+            <property name="sourceAddress" expression="json-eval($.sourceAddress)"/>
+            <property name="distinationAddressTon" expression="json-eval($.distinationAddressTon)"/>
+            <property name="distinationAddressNpi" expression="json-eval($.distinationAddressNpi)"/>
+            <property name="distinationAddress" expression="json-eval($.distinationAddress)"/>
+            <property name="alphabet" expression="json-eval($.alphabet)"/>
+            <property name="message" expression="json-eval($.message)"/>
+            <property name="smscDeliveryReceipt" expression="json-eval($.smscDeliveryReceipt)"/>
+            <property name="messageClass" expression="json-eval($.messageClass)"/>
+            <property name="isCompressed" expression="json-eval($.isCompressed)"/>
+            <property name="esmclass" expression="json-eval($.esmclass)"/>
+            <property name="protocolid" expression="json-eval($.protocolid)"/>
+            <property name="priorityflag" expression="json-eval($.priorityflag)"/>
+            <property name="replaceIfPresentFlag" expression="json-eval($.replaceIfPresentFlag)"/>
+            <property name="submitDefaultMsgId" expression="json-eval($.submitDefaultMsgId)"/>
+            <property name="validityPeriod" expression="json-eval($.validityPeriod)"/>
+            <property name="enquireLinkTimer" expression="json-eval($.enquireLinkTimer)"/>
+            <property name="transactionTimer" expression="json-eval($.transactionTimer)"/>
+            <SMPP.init>
+                <host>{$ctx:host}</host>
+                <port>{$ctx:port}</port>
+                <systemId>{$ctx:systemId}</systemId>
+                <password>{$ctx:password}</password>
+                <enquireLinkTimer>{$ctx:enquireLinkTimer}</enquireLinkTimer>
+                <transactionTimer>{$ctx:transactionTimer}</transactionTimer>
+                <systemType>{$ctx:systemType}</systemType>
+                <addressTon>{$ctx:addressTon}</addressTon>
+                <addressNpi>{$ctx:addressNpi}</addressNpi>
+            </SMPP.init>
+            <SMPP.sendSMS>
+                <serviceType>{$ctx:serviceType}</serviceType>
+                <sourceAddressTon>{$ctx:sourceAddressTon}</sourceAddressTon>
+                <sourceAddressNpi>{$ctx:sourceAddressNpi}</sourceAddressNpi>
+                <sourceAddress>{$ctx:sourceAddress}</sourceAddress>
+                <distinationAddressTon>{$ctx:distinationAddressTon}</distinationAddressTon>
+                <distinationAddressNpi>{$ctx:distinationAddressNpi}</distinationAddressNpi>
+                <distinationAddress>{$ctx:distinationAddress}</distinationAddress>
+                <alphabet>{$ctx:alphabet}</alphabet>
+                <message>{$ctx:message}</message>
+                <smscDeliveryReceipt>{$ctx:smscDeliveryReceipt}</smscDeliveryReceipt>
+                <messageClass>{$ctx:messageClass}</messageClass>
+                <isCompressed>{$ctx:isCompressed}</isCompressed>
+                <esmclass>{$ctx:esmclass}</esmclass>
+                <protocolid>{$ctx:protocolid}</protocolid>
+                <priorityflag>{$ctx:priorityflag}</priorityflag>
+                <replaceIfPresentFlag>{$ctx:replaceIfPresentFlag}</replaceIfPresentFlag>
+                <submitDefaultMsgId>{$ctx:submitDefaultMsgId}</submitDefaultMsgId>
+                <validityPeriod>{$ctx:validityPeriod}</validityPeriod>
+            </SMPP.sendSMS>
+            <respond/>
+        </inSequence>
+    </target>
+    <description/>
+</proxy>
