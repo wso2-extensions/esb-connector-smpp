@@ -19,7 +19,7 @@ package org.wso2.carbon.esb.connector;
 
 import org.apache.commons.lang.StringUtils;
 
-public class SMSDto {
+public class SMSDTO {
     private String serviceType;
     private String sourceAddressTon;
     private String sourceAddressNpi;

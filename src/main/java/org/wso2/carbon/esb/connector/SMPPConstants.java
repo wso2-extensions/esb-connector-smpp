@@ -17,10 +17,11 @@
  */
 package org.wso2.carbon.esb.connector;
 
+/**
+ * Contains all constants used in SMPP connector implementation
+ */
 public class SMPPConstants {
-    /**
-     * SMPP Config constants
-     */
+    // SMPP Config constants
     public static final String HOST = "host";
     public static final String PORT = "port";
     public static final String SYSTEM_ID = "systemId";
@@ -31,9 +32,8 @@ public class SMPPConstants {
     public static final String ENQUIRELINK_TIMER = "enquireLinkTimer";
     public static final String TRANSACTION_TIMER = "transactionTimer";
     public static final String SMPP_SESSION = "smpp_session";
-    /**
-     * SMPP send SMS Constants
-     */
+
+    //SMPP send SMS Constants
     public static final String SERVICE_TYPE = "serviceType";
     public static final String SOURCE_ADDRESS_TON = "sourceAddressTon";
     public static final String SOURCE_ADDRESS_NPI = "sourceAddressNpi";

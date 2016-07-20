@@ -44,7 +44,7 @@ public class SendSMS extends AbstractConnector implements Connector {
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
         SMPPSession session;
-        SMSDto dto = new SMSDto();
+        SMSDTO dto = new SMSDTO();
         //Indicates SMS application service
         dto.setServiceType((String) getParameter(messageContext, SMPPConstants.SERVICE_TYPE));
         //Type of number for source address

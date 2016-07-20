@@ -6,13 +6,13 @@ Pre-requisites:
  - Java 1.7
  - The org.wso2.esb.integration.integration-base project is required. The test suite has been configured to download this project automatically.
    If the automatic download fails, download the following project and compile it using the mvn clean install command to update your local repository:
-   https://github.com/wso2-dev/esb-connectors/tree/master/integration-base
+   https://github.com/wso2-extensions/esb-integration-base
 
 Tested Platform: 
 
  - Microsoft WINDOWS V-7
  - UBUNTU 16.04
- - WSO2 ESB 4.9.0, 5.0.0-BETA
+ - WSO2 ESB 4.9.0
 
 
 STEPS:

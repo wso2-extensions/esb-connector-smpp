@@ -18,8 +18,8 @@
 -->
 
 <template name="init" xmlns="http://ws.apache.org/ns/synapse">
-    <parameter name="host" description=""/>
-    <parameter name="port" description=""/>
+    <parameter name="host" description="IP address of the SMSC"/>
+    <parameter name="port" description="Port to access the SMSC"/>
     <parameter name="systemId" description="Identifies the user requesting to bind (username)"/>
     <parameter name="password" description="Password to allow access"/>
     <parameter name="enquireLinkTimer" description="used check whether SMSC is connected or not"/>
