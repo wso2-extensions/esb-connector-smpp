@@ -128,7 +128,7 @@ public class SendSMS extends AbstractConnector implements Connector {
 
             String response = SMPPConstants.START_TAG + messageId + SMPPConstants.END_TAG;
             OMElement element;
-            element = performSearchMessages(response);
+            element = transformMessages(response);
             preparePayload(messageContext, element);
 
             if (log.isDebugEnabled()) {
@@ -178,7 +178,7 @@ public class SendSMS extends AbstractConnector implements Connector {
      * @throws IOException
      * @throws org.codehaus.jettison.json.JSONException
      */
-    private OMElement performSearchMessages(String output) throws XMLStreamException, IOException,
+    private OMElement transformMessages(String output) throws XMLStreamException, IOException,
             JSONException {
         OMElement resultElement;
         resultElement = AXIOMUtil.stringToOM(output);
