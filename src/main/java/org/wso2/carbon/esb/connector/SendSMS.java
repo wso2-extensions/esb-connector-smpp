@@ -17,6 +17,14 @@
  */
 package org.wso2.carbon.esb.connector;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axiom.soap.SOAPBody;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jettison.json.JSONException;
+import javax.xml.stream.XMLStreamException;
+import java.util.Iterator;
+import org.apache.axiom.om.OMElement;
 import org.apache.synapse.MessageContext;
 import org.jsmpp.InvalidResponseException;
 import org.jsmpp.PDUException;
@@ -117,6 +125,12 @@ public class SendSMS extends AbstractConnector implements Connector {
                     (byte) dto.getReplaceIfPresentFlag(),
                     dataCoding, (byte) dto.getSubmitDefaultMsgId(),
                     message.getBytes());
+
+            String response = "<result><messageId>" + messageId + "</messageId></result>";
+            OMElement element;
+            element = performSearchMessages(response);
+            preparePayload(messageContext, element);
+
             if (log.isDebugEnabled()) {
                 log.debug("Message submitted, message_id is " + messageId);
             }
@@ -137,5 +151,41 @@ public class SendSMS extends AbstractConnector implements Connector {
         } catch (Exception e) {
             handleException("IO error occur" + e.getMessage(), e, messageContext);
         }
+    }
+    /**
+     * Prepare pay load
+     *
+     * @param messageContext The message context that is processed by a handler in the handle method
+     * @param element        OMElement
+     */
+    private void preparePayload(MessageContext messageContext, OMElement element) {
+        SOAPBody soapBody = messageContext.getEnvelope().getBody();
+        for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
+            OMElement child = (OMElement) itr.next();
+            child.detach();
+        }
+        for (Iterator itr = element.getChildElements(); itr.hasNext(); ) {
+            OMElement child = (OMElement) itr.next();
+            soapBody.addChild(child);
+        }
+    }
+    /**
+     * Create a OMElement
+     *
+     * @param output output
+     * @return return resultElement
+     * @throws XMLStreamException
+     * @throws IOException
+     * @throws org.codehaus.jettison.json.JSONException
+     */
+    private OMElement performSearchMessages(String output) throws XMLStreamException, IOException,
+            JSONException {
+        OMElement resultElement;
+        if (StringUtils.isNotEmpty(output)) {
+            resultElement = AXIOMUtil.stringToOM(output);
+        } else {
+            resultElement = AXIOMUtil.stringToOM("<result></></result>");
+        }
+        return resultElement;
     }
 }

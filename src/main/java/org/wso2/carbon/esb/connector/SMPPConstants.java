@@ -58,4 +58,6 @@ public class SMPPConstants {
     public static final String DEFAULT = "DEFAULT";
     public static final String ALPHA_DEFAULT = "ALPHA_DEFAULT";
     public static final String CLASS1 = "CLASS1";
+    public static final String START_TAG = "<result><messageId>";
+    public static final String END_TAG = "</messageId></result>";
 }
