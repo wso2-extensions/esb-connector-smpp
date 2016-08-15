@@ -126,7 +126,7 @@ public class SendSMS extends AbstractConnector implements Connector {
                     dataCoding, (byte) dto.getSubmitDefaultMsgId(),
                     message.getBytes());
 
-            String response = "<result><messageId>" + messageId + "</messageId></result>";
+            String response = SMPPConstants.START_TAG + messageId + SMPPConstants.END_TAG;
             OMElement element;
             element = performSearchMessages(response);
             preparePayload(messageContext, element);
@@ -181,11 +181,7 @@ public class SendSMS extends AbstractConnector implements Connector {
     private OMElement performSearchMessages(String output) throws XMLStreamException, IOException,
             JSONException {
         OMElement resultElement;
-        if (StringUtils.isNotEmpty(output)) {
-            resultElement = AXIOMUtil.stringToOM(output);
-        } else {
-            resultElement = AXIOMUtil.stringToOM("<result></></result>");
-        }
+        resultElement = AXIOMUtil.stringToOM(output);
         return resultElement;
     }
 }
