@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -58,6 +58,7 @@ public class SMPPConstants {
     public static final String DEFAULT = "DEFAULT";
     public static final String ALPHA_DEFAULT = "ALPHA_DEFAULT";
     public static final String CLASS1 = "CLASS1";
-    public static final String START_TAG = "<result><messageId>";
-    public static final String END_TAG = "</messageId></result>";
+    public static final String NAMESPACE = "ns";
+    public static final String SMPPCON = "http://org.wso2.esbconnectors.smppConnector";
+    public static final String MESSAGE_ID = "messageId";
 }
