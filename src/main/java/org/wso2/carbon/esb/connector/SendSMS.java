@@ -154,7 +154,7 @@ public class SendSMS extends AbstractConnector implements Connector {
      * @param messageContext The message context that is used to prepare payload message flow.
      * @param element        The OMElement that needs to be added in the body.
      */
-    public static void preparePayload(MessageContext messageContext, OMElement element) {
+    private void preparePayload(MessageContext messageContext, OMElement element) {
         SOAPBody soapBody = messageContext.getEnvelope().getBody();
         for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
             OMElement child = (OMElement) itr.next();
@@ -169,7 +169,7 @@ public class SendSMS extends AbstractConnector implements Connector {
      * @param messageContext The message context that is used in generate result mediation flow.
      * @param resultStatus   Boolean value of the result to display.
      */
-    public static void generateResult(MessageContext messageContext, String resultStatus) {
+    private void generateResult(MessageContext messageContext, String resultStatus) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
         OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
