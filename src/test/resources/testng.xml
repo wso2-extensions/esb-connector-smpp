@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <!--
- ~  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~  WSO2 Inc. licenses this file to you under the Apache License,
  ~  Version 2.0 (the "License"); you may not use this file except
@@ -25,9 +25,15 @@
         <listener class-name="org.wso2.carbon.automation.core.PlatformTestManager"/>
         <listener class-name="org.wso2.carbon.automation.core.PlatformReportManager"/>
     </listeners>
-    <test name="SMPP-Connector-Test" preserve-order="true" verbose="2">
-        <packages>
-            <package name="org.wso2.carbon.connector.integrationTest.SMPP"/>
-        </packages>
+    <test name="SMPP-Integration-Test" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.connector.integrationTest.SMPP.SMPPIntegrationTest"/>
+        </classes>
+    </test>
+    <test name="SMPP-Unit-Test" preserve-order="true" verbose="2">
+        <classes>
+            <class name="org.wso2.carbon.connector.integrationTest.SMPP.SMSConfigTest"/>
+            <class name="org.wso2.carbon.connector.integrationTest.SMPP.SendSMSTest"/>
+        </classes>
     </test>
 </suite>

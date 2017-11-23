@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,13 +17,11 @@
  */
 package org.wso2.carbon.esb.connector;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axiom.om.*;
 import org.apache.axiom.soap.SOAPBody;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jettison.json.JSONException;
-import javax.xml.stream.XMLStreamException;
+
 import java.util.Iterator;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.synapse.MessageContext;
 import org.jsmpp.InvalidResponseException;
@@ -112,7 +110,7 @@ public class SendSMS extends AbstractConnector implements Connector {
             String messageId = session.submitShortMessage(
                     dto.getServiceType(),
                     TypeOfNumber.valueOf(dto.getSourceAddressTon()),
-                    NumberingPlanIndicator.valueOf(dto.getDistinationAddressNpi()),
+                    NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
                     sourceAddress,
                     TypeOfNumber.valueOf(dto.getDistinationAddressTon()),
                     NumberingPlanIndicator.valueOf(dto.getDistinationAddressNpi()),
@@ -126,10 +124,7 @@ public class SendSMS extends AbstractConnector implements Connector {
                     dataCoding, (byte) dto.getSubmitDefaultMsgId(),
                     message.getBytes());
 
-            String response = SMPPConstants.START_TAG + messageId + SMPPConstants.END_TAG;
-            OMElement element;
-            element = transformMessages(response);
-            preparePayload(messageContext, element);
+            generateResult(messageContext, messageId);
 
             if (log.isDebugEnabled()) {
                 log.debug("Message submitted, message_id is " + messageId);
@@ -152,11 +147,12 @@ public class SendSMS extends AbstractConnector implements Connector {
             handleException("IO error occur" + e.getMessage(), e, messageContext);
         }
     }
+
     /**
-     * Prepare pay load
+     * Prepare payload is used to delete the element in existing body and add the new element.
      *
-     * @param messageContext The message context that is processed by a handler in the handle method
-     * @param element        OMElement
+     * @param messageContext The message context that is used to prepare payload message flow.
+     * @param element        The OMElement that needs to be added in the body.
      */
     private void preparePayload(MessageContext messageContext, OMElement element) {
         SOAPBody soapBody = messageContext.getEnvelope().getBody();
@@ -164,24 +160,20 @@ public class SendSMS extends AbstractConnector implements Connector {
             OMElement child = (OMElement) itr.next();
             child.detach();
         }
-        for (Iterator itr = element.getChildElements(); itr.hasNext(); ) {
-            OMElement child = (OMElement) itr.next();
-            soapBody.addChild(child);
-        }
+        soapBody.addChild(element);
     }
+
     /**
-     * Create a OMElement
+     * Generate the result is used to display the result(messageId) after sending message is complete.
      *
-     * @param output output
-     * @return return resultElement
-     * @throws XMLStreamException
-     * @throws IOException
-     * @throws org.codehaus.jettison.json.JSONException
+     * @param messageContext The message context that is used in generate result mediation flow.
+     * @param resultStatus   Boolean value of the result to display.
      */
-    private OMElement transformMessages(String output) throws XMLStreamException, IOException,
-            JSONException {
-        OMElement resultElement;
-        resultElement = AXIOMUtil.stringToOM(output);
-        return resultElement;
+    private void generateResult(MessageContext messageContext, String resultStatus) {
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
+        OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
+        messageElement.setText(resultStatus);
+        preparePayload(messageContext, messageElement);
     }
 }

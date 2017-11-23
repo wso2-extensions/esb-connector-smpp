@@ -12,14 +12,14 @@ Tested Platform:
 
  - Microsoft WINDOWS V-7
  - UBUNTU 16.04
- - WSO2 ESB 4.9.0
+ - WSO2 ESB 5.0.0
 
 
 STEPS:
 
- 1. Make sure the ESB 5.0.0-BETA zip file available at "{SMPP_HOME}/repository/"
+ 1. Make sure the ESB 5.0.0 zip file available at "{SMPP_HOME}/repository/"
 
- 2. Before start the ESB, download jsmpp-2.1.0-RELEASE.jar copy inside the {ESB_HOME}/repository/components/dropins
+ 2. Before start the ESB, download jsmpp-2.1.0-RELEASE.jar copy inside the {ESB_HOME}/repository/components/lib
 
  3. Integration test written based on SMSC simulator. To do that download simulator from https://github.com/smn/logica-smpp-sim
 
