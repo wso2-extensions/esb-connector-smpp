@@ -28,7 +28,7 @@
     <url>http://wso2.org</url>
     <properties>
         <connector.name>SMPP</connector.name>
-        <product.ei.version>6.1.1</product.ei.version>
+        <product.ei.version>6.2.0</product.ei.version>
         <carbon.kernel.version>4.4.17</carbon.kernel.version>
         <automation.framework.utils.version>4.4.2</automation.framework.utils.version>
         <automation.framework.version>4.4.3</automation.framework.version>
@@ -41,6 +41,7 @@
         <bouncycastle.version>1.55</bouncycastle.version>
         <rampart.apache.version>1.6.1-wso2v18</rampart.apache.version>
         <rampart.wso2.version>1.6.1.wso2v18</rampart.wso2.version>
+        <skip-tests>true</skip-tests>
     </properties>
     <dependencies>
         <dependency>
@@ -267,6 +268,7 @@
                 <version>2.12.4</version>
                 <inherited>false</inherited>
                 <configuration>
+                    <skipTests>${skip-tests}</skipTests>
                     <argLine>${surefireArgLine} -ea -Xmx512m</argLine>
                     <disableXmlReport>false</disableXmlReport>
                     <parallel>false</parallel>
