@@ -12,12 +12,12 @@ Tested Platform:
 
  - Microsoft WINDOWS V-7
  - UBUNTU 16.04
- - WSO2 EI 6.1.1
+ - WSO2 EI 6.2.0
 
 
 STEPS:
 
- 1. Make sure the ei 6.1.1 zip file available at "{SMPP_HOME}/repository/"
+ 1. Make sure the ei 6.2.0 zip file available at "{SMPP_CONNECTOR_HOME}/repository/"
 
  2. Before start the EI, download jsmpp-2.1.0-RELEASE.jar copy inside the {EI_HOME}/lib
 
@@ -29,7 +29,7 @@ STEPS:
    password="your password"
    timeout=unlimited
 
- 5. Go to "{SMPP_HOME}/src/test/resources/artifacts/ESB/connector/config/SMPP.properties" and edit your host, port, username, password.
+ 5. Go to "{SMPP_CONNECTOR_HOME}/src/test/resources/artifacts/ESB/connector/config/SMPP.properties" and edit your host, port, username, password.
 
  6. Start SMSC Simulator by executing the following command, "java -cp smpp.jar:smscsim.jar com.logica.smscsim.Simulator".
 
@@ -38,4 +38,4 @@ STEPS:
                 Enter port number as you provided in the SMPP.properties.
                 You will see the “Starting listener... started.” log on the console.
 
- 8. Go to "{SMPP_HOME}/" and type "mvn clean install" to test and build.
+ 8. Go to "{SMPP_CONNECTOR_HOME}/" and type "mvn clean install -Dskip-tests=false" to test and build.
