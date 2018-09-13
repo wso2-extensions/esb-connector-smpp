@@ -28,7 +28,7 @@
     <url>http://wso2.org</url>
     <properties>
         <connector.name>SMPP</connector.name>
-        <product.ei.version>6.2.0</product.ei.version>
+        <product.ei.version>6.4.0</product.ei.version>
         <carbon.kernel.version>4.4.17</carbon.kernel.version>
         <automation.framework.utils.version>4.4.2</automation.framework.utils.version>
         <automation.framework.version>4.4.3</automation.framework.version>
@@ -216,7 +216,7 @@
         <dependency>
             <groupId>org.wso2.esb.integration</groupId>
             <artifactId>integration-base</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
