@@ -17,12 +17,8 @@
  ~  under the License.
 -->
 
-<connector>
-    <component name="SMPP" package="org.wso2.carbon.connector">
-        <dependency component="config"/>
-        <dependency component="smppSendSMS"/>
-        <dependency component="unbind"/>
-        <description>wso2 SMPP connector</description>
-    </component>
-    <icon>icon/icon-small.gif</icon>
-</connector>
+<template name="init" xmlns="http://ws.apache.org/ns/synapse">
+    <sequence>
+        <class name="org.wso2.carbon.esb.connector.SMSConfig"/>
+    </sequence>
+</template>

@@ -99,8 +99,16 @@ public class SendSMS extends AbstractConnector implements Connector {
                 SMPPConstants.SUBMIT_DEFAULT_MESSAGE_ID));
         //Content of the SMS
         String message = (String) getParameter(messageContext, SMPPConstants.SMS_MESSAGE);
-        //Get the user session from the message context
-        session = (SMPPSession) messageContext.getProperty(SMPPConstants.SMPP_SESSION);
+        //Get the user session from the session manager
+        session = SessionManager.getInstance().getBindedSmppSession();
+
+        if (session == null) {
+            String msg = "No Active SMPP Connection found to perform the action. Please trigger SMPP.INIT Prior to " +
+                    "SendSMS";
+            log.error(msg);
+            throw new ConnectException(msg);
+
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("Start Sending SMS");
@@ -144,7 +152,7 @@ public class SendSMS extends AbstractConnector implements Connector {
         } catch (IOException e) {
             handleException("IO error occur" + e.getMessage(), e, messageContext);
         } catch (Exception e) {
-            handleException("IO error occur" + e.getMessage(), e, messageContext);
+            handleException("Error occur" + e.getMessage(), e, messageContext);
         }
     }
 
