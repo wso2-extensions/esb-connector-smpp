@@ -48,7 +48,6 @@ public class SessionManager {
 
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
                                       BindParameter bindParameter) throws IOException {
-
         SMPPSession smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
         if (smppSession == null) {
             smppSession = new SMPPSession();
@@ -65,7 +64,6 @@ public class SessionManager {
     }
 
     public void unbind(String host, int port, String systemId) {
-
         SMPPSession smppSession = smppSessionList.get(getKey(host, port, systemId));
         if (smppSession != null) {
             if (log.isDebugEnabled()) {
