@@ -23,66 +23,56 @@ import org.jsmpp.session.BindParameter;
 import org.jsmpp.session.SMPPSession;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SessionManager {
     protected Log log = LogFactory.getLog(this.getClass());
-    private SMPPSession smppSession;
+    private Map<String, SMPPSession> smppSessionList;
     private static SessionManager sessionManager;
 
-    private SessionManager () {
-
+    private SessionManager() {
+        smppSessionList = new HashMap();
     }
 
-    public static SessionManager getInstance(){
+    public static SessionManager getInstance() {
         if (sessionManager == null)
             sessionManager = new SessionManager();
         return sessionManager;
     }
 
+    private String getKey(String host, int port, String systemId) {
+        return host + SMPPConstants.CONCT_CHAR + port + SMPPConstants.CONCT_CHAR + systemId;
+
+    }
+
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
-                                       BindParameter
-                                               bindParameter) throws IOException{
-        if (smppSession != null) {
-            return smppSession;
-        } else {
+                                      BindParameter bindParameter) throws IOException {
+
+        SMPPSession smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
+        if (smppSession == null) {
+            smppSession = new SMPPSession();
+            smppSession.setEnquireLinkTimer(enquireLinkTimer);
+            smppSession.setTransactionTimer(transactionTimer);
+            smppSession.connectAndBind(host,
+                    port, bindParameter);
             if (log.isDebugEnabled()) {
-                log.debug("Genarating new bind session for " + host);
+                log.debug("A new session is Connected and bind to " + host);
             }
-            getNewSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter);
-            return smppSession;
-        }
-
-    }
-
-    public SMPPSession getBindedSmppSession(){
-        if (smppSession != null) {
-            return smppSession;
-        } else {
-            log.error("Session init needs to be trigger before sending sms to bind with the SMSC");
-            return null;
-        }
-    }
-
-    public SMPPSession getNewSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
-                                         BindParameter bindParameter) throws IOException {
-        unbind();
-        smppSession = new SMPPSession();
-        smppSession.setEnquireLinkTimer(enquireLinkTimer);
-        smppSession.setTransactionTimer(transactionTimer);
-        smppSession.connectAndBind(host,
-                port, bindParameter);
-        if (log.isDebugEnabled()) {
-            log.debug("Conected and bind to " + host);
+            smppSessionList.putIfAbsent(getKey(host, port, bindParameter.getSystemId()), smppSession);
         }
         return smppSession;
     }
 
-    public void unbind() {
+    public void unbind(String host, int port, String systemId) {
+
+        SMPPSession smppSession = smppSessionList.get(getKey(host, port, systemId));
         if (smppSession != null) {
             if (log.isDebugEnabled()) {
-                log.debug("Unbinding the connection with ");
+                log.debug("Unbinding the connection with SMSC");
             }
             smppSession.unbindAndClose();
+            smppSessionList.remove(getKey(host, port, systemId));
         } else {
             log.info("No active smpp session found for unbinding");
         }

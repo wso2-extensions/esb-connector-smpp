@@ -96,7 +96,7 @@ public class SMSConfig extends AbstractConnector implements Connector {
                                 TypeOfNumber.valueOf(addressTON),
                                 NumberingPlanIndicator.valueOf(addressNPI), null));
                 //Set the user session to message context
-                //messageContext.setProperty(SMPPConstants.SMPP_SESSION, session);
+                messageContext.setProperty(SMPPConstants.SMPP_SESSION, session);
                 if (log.isDebugEnabled()) {
                     log.debug("Conected and bind to " + host);
                 }

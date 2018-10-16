@@ -17,8 +17,14 @@
  ~  under the License.
 -->
 
-<template name="init" xmlns="http://ws.apache.org/ns/synapse">
+<template name="unbind" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="host" description="IP address of the SMSC"/>
+    <parameter name="port" description="Port to access the SMSC"/>
+    <parameter name="systemId" description="Identifies the user requesting to unbind (username)"/>
     <sequence>
-        <class name="org.wso2.carbon.esb.connector.SMSConfig"/>
+        <property name="host" expression="$func:host"/>
+        <property name="port" expression="$func:port"/>
+        <property name="systemId" expression="$func:systemId"/>
+        <class name="org.wso2.carbon.esb.connector.SMSUnbind"/>
     </sequence>
 </template>

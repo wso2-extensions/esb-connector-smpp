@@ -25,7 +25,13 @@ import org.wso2.carbon.connector.core.Connector;
 public class SMSUnbind extends AbstractConnector implements Connector {
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
-        SessionManager.getInstance().unbind();
+        //IP address of the SMSC
+        String host = (String) getParameter(messageContext, SMPPConstants.HOST);
+        //port to access the SMSC
+        int port = Integer.parseInt((String) getParameter(messageContext, SMPPConstants.PORT));
+        //Identifies the ESME system requesting to bind as a transmitter with the SMSC.
+        String systemId = (String) getParameter(messageContext, SMPPConstants.SYSTEM_ID);
+        SessionManager.getInstance().unbind(host, port, systemId);
         log.info("SMSC Connection unbind is completed.");
     }
 }

@@ -16,9 +16,9 @@
  ~  specific language governing permissions and limitations
  ~  under the License.
 -->
-<component name="config" type="synapse/template">
+<component name="unbind" type="synapse/template">
     <subComponents>
-        <component name="init">
+        <component name="unbind">
             <file>unbind.xml</file>
             <description>Unbind the SMSC connection</description>
         </component>

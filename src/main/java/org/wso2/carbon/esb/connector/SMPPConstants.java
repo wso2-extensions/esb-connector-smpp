@@ -22,6 +22,7 @@ package org.wso2.carbon.esb.connector;
  */
 public class SMPPConstants {
     // SMPP Config constants
+    public static final String CONCT_CHAR = "-";
     public static final String HOST = "host";
     public static final String PORT = "port";
     public static final String SYSTEM_ID = "systemId";
