@@ -21,8 +21,14 @@ import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.Connector;
-
+/**
+ * The SMSUnbind class is to provide the unbind capability as a template
+ */
 public class SMSUnbind extends AbstractConnector implements Connector {
+    /**
+     * @param messageContext The message context that is processed by a handler in the handle method
+     * @throws ConnectException
+     */
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
         //IP address of the SMSC

@@ -25,8 +25,11 @@ import org.jsmpp.session.SMPPSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * The Session Manager maintains the bind connection with smsc for reuse until a unbind is triggered.
+ */
 public class SessionManager {
+
     protected Log log = LogFactory.getLog(this.getClass());
     private Map<String, SMPPSession> smppSessionList;
     private static SessionManager sessionManager;
@@ -35,7 +38,7 @@ public class SessionManager {
         smppSessionList = new HashMap();
     }
 
-    public static SessionManager getInstance() {
+    public static synchronized SessionManager getInstance() {
         if (sessionManager == null)
             sessionManager = new SessionManager();
         return sessionManager;
@@ -46,6 +49,14 @@ public class SessionManager {
 
     }
 
+    /**
+     * @param enquireLinkTimer Enquire Link Timer for bind properties.
+     * @param transactionTimer Transaction  Timer for bind properties.
+     * @param host host name or ip of the SMSC.
+     * @param port connection port of the SMSC.
+     * @param bindParameter the list of parameter needed for the SMSC connectivuty.
+     * @throws IOException
+     */
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
                                       BindParameter bindParameter) throws IOException {
         SMPPSession smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
@@ -53,8 +64,7 @@ public class SessionManager {
             smppSession = new SMPPSession();
             smppSession.setEnquireLinkTimer(enquireLinkTimer);
             smppSession.setTransactionTimer(transactionTimer);
-            smppSession.connectAndBind(host,
-                    port, bindParameter);
+            smppSession.connectAndBind(host, port, bindParameter);
             if (log.isDebugEnabled()) {
                 log.debug("A new session is Connected and bind to " + host);
             }
@@ -63,6 +73,11 @@ public class SessionManager {
         return smppSession;
     }
 
+    /**
+     * @param host host name or ip of the SMSC.
+     * @param port connection port of the SMSC.
+     * @param systemId systemID used to bind the connection to SMSC.
+     */
     public void unbind(String host, int port, String systemId) {
         SMPPSession smppSession = smppSessionList.get(getKey(host, port, systemId));
         if (smppSession != null) {
