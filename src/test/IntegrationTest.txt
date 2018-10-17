@@ -12,30 +12,31 @@ Tested Platform:
 
  - Microsoft WINDOWS V-7
  - UBUNTU 16.04
- - WSO2 EI 6.2.0
+ - WSO2 EI 6.4.0
 
 
 STEPS:
+ 1. Download EI 6.4.0 by navigating the following the URL: https://wso2.com/integration/.
 
- 1. Make sure the ei 6.2.0 zip file available at "{SMPP_CONNECTOR_HOME}/repository/"
+ 2. Download jsmpp-2.1.0-RELEASE.jar copy inside the {EI_HOME}/lib
 
- 2. Before start the EI, download jsmpp-2.1.0-RELEASE.jar copy inside the {EI_HOME}/lib
+ 3. Compress the EI zip and place it in "{SMPP_CONNECTOR_HOME}/repository/"
 
- 3. Integration test written based on SMSC simulator. To do that download simulator from https://github.com/smn/logica-smpp-sim
+ 4. Integration test written based on SMSC simulator. To do that download simulator from https://github.com/smn/logica-smpp-sim
 
- 4. Go to SMSC Simulator directory, edit the users.txt file and add following name-value pairs to it.
+ 5. Go to SMSC Simulator directory, edit the users.txt file and add following name-value pairs to it.
 
    name="your username"
    password="your password"
    timeout=unlimited
 
- 5. Go to "{SMPP_CONNECTOR_HOME}/src/test/resources/artifacts/ESB/connector/config/SMPP.properties" and edit your host, port, username, password.
+ 6. Go to "{SMPP_CONNECTOR_HOME}/repository/esb-connector-SMPP.properties" and edit your host, port, username, password.
 
- 6. Start SMSC Simulator by executing the following command, "java -cp smpp.jar:smscsim.jar com.logica.smscsim.Simulator".
+ 7. Start SMSC Simulator by executing the following command, "java -cp smpp.jar:smscsim.jar com.logica.smscsim.Simulator".
 
- 7. You will see a simulator screen. There,
+ 8. You will see a simulator screen. There,
                 Enter 1 for the prompt to start simulation.
                 Enter port number as you provided in the SMPP.properties.
                 You will see the “Starting listener... started.” log on the console.
 
- 8. Go to "{SMPP_CONNECTOR_HOME}/" and type "mvn clean install -Dskip-tests=false" to test and build.
+ 9. Go to "{SMPP_CONNECTOR_HOME}/" and type "mvn clean install -Dskip-tests=false" to test and build.

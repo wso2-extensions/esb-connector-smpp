@@ -35,9 +35,12 @@ public class SMPPIntegrationTest extends ConnectorIntegrationTestBase {
 
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
+
         String connectorName = System.getProperty("connector_name") + "-connector-" +
                 System.getProperty("connector_version") + ".zip";
         init(connectorName);
+        getApiConfigProperties();
+
         esbRequestHeadersMap.put("Accept-Charset", "UTF-8");
         esbRequestHeadersMap.put("Content-Type", "application/json");
         esbRequestHeadersMap.put("Accept", "application/json");
@@ -48,7 +51,7 @@ public class SMPPIntegrationTest extends ConnectorIntegrationTestBase {
         RestResponse<JSONObject> esbRestResponse =
                 sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap, "sendSMSOptional.json");
         Assert.assertEquals(esbRestResponse.getHttpStatusCode(), 200);
-        Assert.assertEquals(true, esbRestResponse.getBody().toString().contains(""));
+        Assert.assertNotNull(esbRestResponse.getBody().get("messageId"));
     }
 
     @Test(groups = {"wso2.esb"}, description = "SMPP connector send SMS integration test")
@@ -56,7 +59,7 @@ public class SMPPIntegrationTest extends ConnectorIntegrationTestBase {
         RestResponse<JSONObject> esbRestResponse =
                 sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap, "sendSMSMandatory.json");
         Assert.assertEquals(esbRestResponse.getHttpStatusCode(), 200);
-        Assert.assertEquals(true, esbRestResponse.getBody().toString().contains("hi hru"));
+        Assert.assertNotNull(esbRestResponse.getBody().get("messageId"));
     }
 
     @Test(groups = {"wso2.esb"}, description = "SMPP connector send SMS integration test" +
