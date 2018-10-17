@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~  WSO2 Inc. licenses this file to you under the Apache License,
  ~  Version 2.0 (the "License"); you may not use this file except
@@ -16,13 +16,11 @@
  ~  specific language governing permissions and limitations
  ~  under the License.
 -->
-
-<connector>
-    <component name="SMPP" package="org.wso2.carbon.connector">
-        <dependency component="config"/>
-        <dependency component="smppSendSMS"/>
-        <dependency component="unbind"/>
-        <description>wso2 SMPP connector</description>
-    </component>
-    <icon>icon/icon-small.gif</icon>
-</connector>
+<component name="unbind" type="synapse/template">
+    <subComponents>
+        <component name="unbind">
+            <file>unbind.xml</file>
+            <description>Unbind the SMSC connection</description>
+        </component>
+    </subComponents>
+</component>

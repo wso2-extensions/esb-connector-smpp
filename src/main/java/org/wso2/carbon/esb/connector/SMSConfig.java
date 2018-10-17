@@ -90,12 +90,8 @@ public class SMSConfig extends AbstractConnector implements Connector {
         }
 
         try {
-                session = new SMPPSession();
-                session.setEnquireLinkTimer(enquireLinkTimer);
-                session.setTransactionTimer(transactionTimer);
-                session.connectAndBind(host,
-                        port,
-                        new BindParameter(BindType.BIND_TX,
+                session = SessionManager.getInstance().getSmppSession(enquireLinkTimer, transactionTimer,
+                        host, port, new BindParameter(BindType.BIND_TX,
                                 systemId, password, systemType,
                                 TypeOfNumber.valueOf(addressTON),
                                 NumberingPlanIndicator.valueOf(addressNPI), null));
