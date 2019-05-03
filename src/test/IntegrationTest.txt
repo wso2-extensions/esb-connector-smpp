@@ -12,11 +12,11 @@ Tested Platform:
 
  - Microsoft WINDOWS V-7
  - UBUNTU 16.04
- - WSO2 EI 6.4.0
+ - WSO2 EI 6.5.0
 
 
 STEPS:
- 1. Download EI 6.4.0 by navigating the following the URL: https://wso2.com/integration/.
+ 1. Download EI 6.5.0 by navigating the following the URL: https://wso2.com/integration/.
 
  2. Download jsmpp-2.1.0-RELEASE.jar copy inside the {EI_HOME}/lib
 
