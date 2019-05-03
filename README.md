@@ -29,6 +29,6 @@ Follow the steps given below to build the SMPP connector from the source code.
 ## How You Can Contribute
 
 As an open source project, WSO2 extensions welcome contributions from the community.
-Check the [issue tracker](https://github.com/wso2-extensions/esb-connector-amazondynamodb/issues) for open issues that interest you. We look forward to receiving your contributions.
+Check the [issue tracker](https://github.com/wso2-extensions/esb-connector-smpp/issues) for open issues that interest you. We look forward to receiving your contributions.
 
 
