@@ -174,13 +174,13 @@ public class SendSMS extends AbstractConnector implements Connector {
      * Generate the result is used to display the result(messageId) after sending message is complete.
      *
      * @param messageContext The message context that is used in generate result mediation flow.
-     * @param resultStatus   Boolean value of the result to display.
+     * @param messageId   String value of the result to display.
      */
-    private void generateResult(MessageContext messageContext, String resultStatus) {
+    private void generateResult(MessageContext messageContext, String messageId) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
         OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
-        messageElement.setText(resultStatus);
+        messageElement.setText(messageId);
         preparePayload(messageContext, messageElement);
     }
 }
