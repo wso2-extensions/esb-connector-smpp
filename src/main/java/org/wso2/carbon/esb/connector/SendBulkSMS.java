@@ -58,6 +58,7 @@ public class SendBulkSMS extends AbstractConnector implements Connector {
 
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
+
         SMSDTO dto = new SMSDTO();
         //Indicates SMS application service
         dto.setServiceType((String) getParameter(messageContext, SMPPConstants.SERVICE_TYPE));
@@ -111,7 +112,7 @@ public class SendBulkSMS extends AbstractConnector implements Connector {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("Start Sending SMS");
+            log.debug("Start Sending Bulk SMS");
         }
 
         try {
@@ -172,38 +173,43 @@ public class SendBulkSMS extends AbstractConnector implements Connector {
             addressObject = addressElement.getAsJsonObject();
         }
 
-        JsonArray mobileNumbers = addressObject.get(SMPPConstants.DESTINATION_ADDRESS_MOBILE_NUMBERS).getAsJsonArray();
         String numberingPlan = SMPPConstants.UNKNOWN;
         String numberType = SMPPConstants.UNKNOWN;
 
-        if (null != addressObject.get(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN)) {
+        if (addressObject.has(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN)) {
             numberingPlan = addressObject.get(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN).getAsString();
         }
 
-        if (null != addressObject.get(SMPPConstants.DESTINATION_ADDRESS_TYPE)) {
+        if (addressObject.has(SMPPConstants.DESTINATION_ADDRESS_TYPE)) {
             numberType = addressObject.get(SMPPConstants.DESTINATION_ADDRESS_TYPE).getAsString();
+        }
+
+        JsonArray mobileNumbers = addressObject.get(SMPPConstants.DESTINATION_ADDRESS_MOBILE_NUMBERS).getAsJsonArray();
+
+        //TODO: If jsmpp library is upgraded, reset this value accordingly.
+        if (mobileNumbers.size() > SMPPConstants.MAXIMUM_DESTINATIONS) {
+            throw new ConnectException("Number of destinations is invalid. Should not exceed 255.");
         }
 
         Iterator<JsonElement> numberIterator = mobileNumbers.iterator();
         while (numberIterator.hasNext()) {
-            String number;
-            // struct 1,2 will only execute the else block
+            // struct 1, 2 will only execute the else block
             // struct 3 can execute both if and ele blocks
+            String number;
+
             JsonElement numberElement = numberIterator.next();
             if (numberElement.isJsonObject()) {
-                if (null != numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN)) {
-                    numberingPlan = numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN).getAsString();
+                String customType = numberType;
+                String customNumberPlan = numberingPlan;
+                if (numberElement.getAsJsonObject().has(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN)) {
+                    customNumberPlan = numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_NUMBERING_PLAN).getAsString();
                 }
 
-                if (null != numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_TYPE)) {
-                    numberType = numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_TYPE).getAsString();
+                if (numberElement.getAsJsonObject().has(SMPPConstants.DESTINATION_ADDRESS_TYPE)) {
+                    customType = numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_TYPE).getAsString();
                 }
                 number = numberElement.getAsJsonObject().get(SMPPConstants.DESTINATION_ADDRESS_MOBILE_NUMBER).getAsString();
-                addressList.add(new Address(TypeOfNumber.valueOf(numberType), NumberingPlanIndicator.valueOf(numberingPlan), number));
-                // We need to reset the plan and type since the next number element can be of string type.
-                // and the it will be of default plan and type
-                numberingPlan = SMPPConstants.UNKNOWN;
-                numberType = SMPPConstants.UNKNOWN;
+                addressList.add(new Address(TypeOfNumber.valueOf(customType), NumberingPlanIndicator.valueOf(customNumberPlan), number));
             } else {
                 number = numberElement.getAsString();
                 addressList.add(new Address(TypeOfNumber.valueOf(numberType), NumberingPlanIndicator.valueOf(numberingPlan), number));
@@ -217,7 +223,7 @@ public class SendBulkSMS extends AbstractConnector implements Connector {
      * Create the response payload using the SubmitMultiResult.
      *
      * @param messageContext Synapse message context
-     * @param smr SubmitMultiResult of the bulk message request
+     * @param smr            SubmitMultiResult of the bulk message request
      */
     private void generateBulkResult(MessageContext messageContext, SubmitMultiResult smr) {
 
