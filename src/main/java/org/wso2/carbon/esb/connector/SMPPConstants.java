@@ -62,4 +62,14 @@ public class SMPPConstants {
     public static final String NAMESPACE = "ns";
     public static final String SMPPCON = "http://org.wso2.esbconnectors.smppConnector";
     public static final String MESSAGE_ID = "messageId";
+    public static final String DESTINATION_ADDRESSES = "destinationAddresses";
+    public static final String DESTINATION_ADDRESS = "destinationAddress";
+    public static final String ERROR_STATUS_CODE = "errorStatusCode";
+    public static final String DESTINATION_ADDRESS_MOBILE_NUMBERS = "mobileNumbers";
+    public static final String DESTINATION_ADDRESS_TYPE = "type";
+    public static final String DESTINATION_ADDRESS_NUMBERING_PLAN= "numberingPlan";
+    public static final String DESTINATION_ADDRESS_MOBILE_NUMBER= "mobileNumber";
+    public static final String RESULTS = "results";
+    public static final String UNSUCCESSFUL_DELIVERIES = "unsuccessfulDeliveries";
+    public static final String UNSUCCESSFUL_DELIVERY = "unsuccessfulDelivery";
 }

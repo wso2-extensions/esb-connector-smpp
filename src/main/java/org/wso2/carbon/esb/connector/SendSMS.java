@@ -18,9 +18,6 @@
 package org.wso2.carbon.esb.connector;
 
 import org.apache.axiom.om.*;
-import org.apache.axiom.soap.SOAPBody;
-
-import java.util.Iterator;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.synapse.MessageContext;
@@ -151,23 +148,8 @@ public class SendSMS extends AbstractConnector implements Connector {
         } catch (IOException e) {
             handleException("IO error occur" + e.getMessage(), e, messageContext);
         } catch (Exception e) {
-            handleException("IO error occur" + e.getMessage(), e, messageContext);
+            handleException("Unexpected error occur" + e.getMessage(), e, messageContext);
         }
-    }
-
-    /**
-     * Prepare payload is used to delete the element in existing body and add the new element.
-     *
-     * @param messageContext The message context that is used to prepare payload message flow.
-     * @param element        The OMElement that needs to be added in the body.
-     */
-    private void preparePayload(MessageContext messageContext, OMElement element) {
-        SOAPBody soapBody = messageContext.getEnvelope().getBody();
-        for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
-            OMElement child = (OMElement) itr.next();
-            child.detach();
-        }
-        soapBody.addChild(element);
     }
 
     /**
@@ -181,6 +163,6 @@ public class SendSMS extends AbstractConnector implements Connector {
         OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
         OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
         messageElement.setText(resultStatus);
-        preparePayload(messageContext, messageElement);
+        SMSUtils.preparePayload(messageContext, messageElement);
     }
 }
