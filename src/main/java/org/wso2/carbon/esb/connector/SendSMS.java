@@ -39,26 +39,22 @@ import java.util.Date;
 /**
  * Send SMS message.
  */
-public class SendSMS extends AbstractConnector implements Connector {
+public class SendSMS extends AbstractSendSMS {
+
     /**
      * @param messageContext The message context that is processed by a handler in the handle method
      * @throws ConnectException
      */
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
-        SMPPSession session;
-        SMSDTO dto = new SMSDTO();
-        //Indicates SMS application service
-        dto.setServiceType((String) getParameter(messageContext, SMPPConstants.SERVICE_TYPE));
-        //Type of number for source address
-        dto.setSourceAddressTon((String) getParameter(messageContext,
-                SMPPConstants.SOURCE_ADDRESS_TON));
-        //Numbering plan indicator for source address
-        dto.setSourceAddressNpi((String) getParameter(messageContext,
-                SMPPConstants.SOURCE_ADDRESS_NPI));
-        //Source address of the short message
-        String sourceAddress = (String) getParameter(messageContext,
-                SMPPConstants.SOURCE_ADDRESS);
+
+        SMPPSession session = getSession(messageContext);
+        SMSDTO dto = getDTO(messageContext);
+        //Delivery of the message
+        TimeFormatter timeFormatter = new AbsoluteTimeFormatter();
+        //Defines the encoding scheme of the SMS message
+        GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
+                MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
         //Type of number for destination
         dto.setDistinationAddressTon((String) getParameter(messageContext,
                 SMPPConstants.DISTINATION_ADDRESS_TON));
@@ -68,43 +64,6 @@ public class SendSMS extends AbstractConnector implements Connector {
         //Destination address of the short message
         String distinationAddress = (String) getParameter(messageContext,
                 SMPPConstants.DISTINATION_ADDRESS);
-        //Used to define message mode and message type
-        dto.setEsmclass((String) getParameter(messageContext, SMPPConstants.ESM_CLASS));
-        //protocol identifier
-        dto.setProtocolid((String) getParameter(messageContext, SMPPConstants.PROTOCOL_ID));
-        //sets the priority of the message
-        dto.setPriorityflag((String) getParameter(messageContext, SMPPConstants.PRIORITY_FLAG));
-        //Delivery of the message
-        TimeFormatter timeFormatter = new AbsoluteTimeFormatter();
-        //validity period of message
-        String validityPeriod = (String) getParameter(messageContext, SMPPConstants.VALIDITY_PERIOD);
-        //Type of the SMSC delivery receipt
-        dto.setSmscDeliveryReceipt((String) getParameter(messageContext,
-                SMPPConstants.SMSC_DELIVERY_RECEIPT));
-        //flag indicating if submitted message should replace an existing message
-        dto.setReplaceIfPresentFlag((String) getParameter(messageContext,
-                SMPPConstants.REPLACE_IF_PRESENT_FLAG));
-        //Alphabet used in the data encoding of the message
-        dto.setAlphabet((String) getParameter(messageContext, SMPPConstants.ALPHABET));
-        dto.setMessageClass((String) getParameter(messageContext, SMPPConstants.MESSAGE_CLASS));
-        dto.setCompressed((String) getParameter(messageContext, SMPPConstants.IS_COMPRESSED));
-        //Defines the encoding scheme of the SMS message
-        GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
-                MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
-        //indicates short message to send from a predefined list of messages stored on SMSC
-        dto.setSubmitDefaultMsgId((String) getParameter(messageContext,
-                SMPPConstants.SUBMIT_DEFAULT_MESSAGE_ID));
-        //Content of the SMS
-        String message = (String) getParameter(messageContext, SMPPConstants.SMS_MESSAGE);
-        //Get the user session from the message context
-        session = (SMPPSession) messageContext.getProperty(SMPPConstants.SMPP_SESSION);
-
-        if (session == null) {
-            String msg = "No Active SMPP Connection found to perform the action. Please trigger SMPP.INIT Prior to " +
-                    "SendSMS";
-            log.error(msg);
-            throw new ConnectException(msg);
-        }
 
         if (log.isDebugEnabled()) {
             log.debug("Start Sending SMS");
@@ -115,18 +74,18 @@ public class SendSMS extends AbstractConnector implements Connector {
                     dto.getServiceType(),
                     TypeOfNumber.valueOf(dto.getSourceAddressTon()),
                     NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
-                    sourceAddress,
+                    dto.getSourceAddress(),
                     TypeOfNumber.valueOf(dto.getDistinationAddressTon()),
                     NumberingPlanIndicator.valueOf(dto.getDistinationAddressNpi()),
                     distinationAddress,
                     new ESMClass(dto.getEsmclass()),
                     (byte) dto.getProtocolid(), (byte) dto.getPriorityflag(),
                     timeFormatter.format(new Date()),
-                    validityPeriod,
+                    dto.getValidityPeriod(),
                     new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
                     (byte) dto.getReplaceIfPresentFlag(),
                     dataCoding, (byte) dto.getSubmitDefaultMsgId(),
-                    message.getBytes());
+                    dto.getMessage().getBytes());
 
             generateResult(messageContext, messageId);
 
@@ -135,20 +94,20 @@ public class SendSMS extends AbstractConnector implements Connector {
             }
         } catch (PDUException e) {
             // Invalid PDU parameter
-            handleException("Invalid PDU parameter" + e.getMessage(), e, messageContext);
+            handleSMPPError("Invalid PDU parameter" + e.getMessage(), e, messageContext);
         } catch (ResponseTimeoutException e) {
             // Response timeout
-            handleException("Response timeout" + e.getMessage(), e, messageContext);
+            handleSMPPError("Response timeout" + e.getMessage(), e, messageContext);
         } catch (InvalidResponseException e) {
-            // Invalid responselid respose"
-            handleException("Invalid response" + e.getMessage(), e, messageContext);
+            // Invalid response
+            handleSMPPError("Invalid response" + e.getMessage(), e, messageContext);
         } catch (NegativeResponseException e) {
             // Receiving negative response (non-zero command_status)
-            handleException("Receive negative response" + e.getMessage(), e, messageContext);
+            handleSMPPError("Receive negative response" + e.getMessage(), e, messageContext);
         } catch (IOException e) {
-            handleException("IO error occur" + e.getMessage(), e, messageContext);
+            handleSMPPError("IO error occur" + e.getMessage(), e, messageContext);
         } catch (Exception e) {
-            handleException("Unexpected error occur" + e.getMessage(), e, messageContext);
+            handleSMPPError("Unexpected error occur" + e.getMessage(), e, messageContext);
         }
     }
 
@@ -159,10 +118,11 @@ public class SendSMS extends AbstractConnector implements Connector {
      * @param resultStatus   Boolean value of the result to display.
      */
     private void generateResult(MessageContext messageContext, String resultStatus) {
+
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
         OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
         messageElement.setText(resultStatus);
-        SMSUtils.preparePayload(messageContext, messageElement);
+        preparePayload(messageContext, messageElement);
     }
 }

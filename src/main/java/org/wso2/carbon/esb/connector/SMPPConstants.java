@@ -73,4 +73,5 @@ public class SMPPConstants {
     public static final String UNSUCCESSFUL_DELIVERIES = "unsuccessfulDeliveries";
     public static final String UNSUCCESSFUL_DELIVERY = "unsuccessfulDelivery";
     public static final int MAXIMUM_DESTINATIONS = 255;
+    public static final String SMPP_ERROR = "SMPP_ERROR";
 }

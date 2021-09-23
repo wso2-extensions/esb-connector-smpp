@@ -46,70 +46,25 @@ import org.jsmpp.session.SMPPSession;
 import org.jsmpp.util.AbsoluteTimeFormatter;
 import org.jsmpp.util.TimeFormatter;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.Connector;
-import org.wso2.carbon.connector.core.AbstractConnector;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-public class SendBulkSMS extends AbstractConnector implements Connector {
+public class SendBulkSMS extends AbstractSendSMS {
 
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
 
-        SMSDTO dto = new SMSDTO();
-        //Indicates SMS application service
-        dto.setServiceType((String) getParameter(messageContext, SMPPConstants.SERVICE_TYPE));
-        //Type of number for source address
-        dto.setSourceAddressTon((String) getParameter(messageContext,
-                SMPPConstants.SOURCE_ADDRESS_TON));
-        //Numbering plan indicator for source address
-        dto.setSourceAddressNpi((String) getParameter(messageContext,
-                SMPPConstants.SOURCE_ADDRESS_NPI));
-        //Source address of the short message
-        String sourceAddress = (String) getParameter(messageContext,
-                SMPPConstants.SOURCE_ADDRESS);
-        //Used to define message mode and message type
-        dto.setEsmclass((String) getParameter(messageContext, SMPPConstants.ESM_CLASS));
-        //protocol identifier
-        dto.setProtocolid((String) getParameter(messageContext, SMPPConstants.PROTOCOL_ID));
-        //sets the priority of the message
-        dto.setPriorityflag((String) getParameter(messageContext, SMPPConstants.PRIORITY_FLAG));
-        //Delivery of the message
+        SMSDTO dto = getDTO(messageContext);
+        SMPPSession session = getSession(messageContext);
         TimeFormatter timeFormatter = new AbsoluteTimeFormatter();
-        //validity period of message
-        String validityPeriod = (String) getParameter(messageContext, SMPPConstants.VALIDITY_PERIOD);
-        //Type of the SMSC delivery receipt
-        dto.setSmscDeliveryReceipt((String) getParameter(messageContext,
-                SMPPConstants.SMSC_DELIVERY_RECEIPT));
-        //flag indicating if submitted message should replace an existing message
-        dto.setReplaceIfPresentFlag((String) getParameter(messageContext,
-                SMPPConstants.REPLACE_IF_PRESENT_FLAG));
-        //Alphabet used in the data encoding of the message
-        dto.setAlphabet((String) getParameter(messageContext, SMPPConstants.ALPHABET));
-        dto.setMessageClass((String) getParameter(messageContext, SMPPConstants.MESSAGE_CLASS));
-        dto.setCompressed((String) getParameter(messageContext, SMPPConstants.IS_COMPRESSED));
         //Defines the encoding scheme of the SMS message
         GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
                 MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
-        //indicates short message to send from a predefined list of messages stored on SMSC
-        dto.setSubmitDefaultMsgId((String) getParameter(messageContext,
-                SMPPConstants.SUBMIT_DEFAULT_MESSAGE_ID));
-        //Content of the SMS
-        String message = (String) getParameter(messageContext, SMPPConstants.SMS_MESSAGE);
-
         //Destination addresses payload
         Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
-
-        SMPPSession session = (SMPPSession) messageContext.getProperty(SMPPConstants.SMPP_SESSION);
-        if (session == null) {
-            String msg = "No Active SMPP Connection found to perform the action. Please trigger SMPP.INIT Prior to " +
-                    "SendSMS";
-            log.error(msg);
-            throw new ConnectException(msg);
-        }
 
         if (log.isDebugEnabled()) {
             log.debug("Start Sending Bulk SMS");
@@ -120,31 +75,31 @@ public class SendBulkSMS extends AbstractConnector implements Connector {
                     dto.getServiceType(),
                     TypeOfNumber.valueOf(dto.getSourceAddressTon()),
                     NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
-                    sourceAddress,
+                    dto.getSourceAddress(),
                     generateDestinationAddresses(addresses),
                     new ESMClass(dto.getEsmclass()),
                     (byte) dto.getProtocolid(),
                     (byte) dto.getPriorityflag(),
                     timeFormatter.format(new Date()),
-                    validityPeriod,
+                    dto.getValidityPeriod(),
                     new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
                     new ReplaceIfPresentFlag(dto.getReplaceIfPresentFlag()),
                     dataCoding,
                     (byte) dto.getSubmitDefaultMsgId(),
-                    message.getBytes());
+                    dto.getMessage().getBytes());
             generateBulkResult(messageContext, multiResult);
         } catch (ResponseTimeoutException e) {
-            handleException("Response timeout " + e.getMessage(), e, messageContext);
+            handleSMPPError("Response timeout " + e.getMessage(), e, messageContext);
         } catch (PDUException e) {
-            handleException("Invalid PDU parameter " + e.getMessage(), e, messageContext);
+            handleSMPPError("Invalid PDU parameter " + e.getMessage(), e, messageContext);
         } catch (IOException e) {
-            handleException("IO error occur " + e.getMessage(), e, messageContext);
+            handleSMPPError("IO error occur " + e.getMessage(), e, messageContext);
         } catch (InvalidResponseException e) {
-            handleException("Invalid response " + e.getMessage(), e, messageContext);
+            handleSMPPError("Invalid response " + e.getMessage(), e, messageContext);
         } catch (NegativeResponseException e) {
-            handleException("Receive negative response " + e.getMessage(), e, messageContext);
+            handleSMPPError("Receive negative response " + e.getMessage(), e, messageContext);
         } catch (Exception e) {
-            handleException("Unexpected error occurred " + e.getMessage(), e, messageContext);
+            handleSMPPError("Unexpected error occurred " + e.getMessage(), e, messageContext);
         }
     }
 
@@ -252,6 +207,6 @@ public class SendBulkSMS extends AbstractConnector implements Connector {
         root.addChild(messageElement);
         root.addChild(unsuccessfulDeliveries);
 
-        SMSUtils.preparePayload(messageContext, root);
+        preparePayload(messageContext, root);
     }
 }
