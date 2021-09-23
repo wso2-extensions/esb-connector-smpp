@@ -34,6 +34,9 @@ public class SMSDTO {
     private String messageClass;
     private boolean isCompressed;
     private int submitDefaultMsgId;
+    private String message;
+    private String validityPeriod;
+    private String sourceAddress;
 
     public String getDistinationAddressTon() {
         return distinationAddressTon;
@@ -200,5 +203,35 @@ public class SMSDTO {
             serviceType = SMPPConstants.CMT;
         }
         this.serviceType = serviceType;
+    }
+
+    public String getMessage() {
+
+        return message;
+    }
+
+    public void setMessage(String message) {
+
+        this.message = message;
+    }
+
+    public String getValidityPeriod() {
+
+        return validityPeriod;
+    }
+
+    public void setValidityPeriod(String validityPeriod) {
+
+        this.validityPeriod = validityPeriod;
+    }
+
+    public String getSourceAddress() {
+
+        return sourceAddress;
+    }
+
+    public void setSourceAddress(String sourceAddress) {
+
+        this.sourceAddress = sourceAddress;
     }
 }
