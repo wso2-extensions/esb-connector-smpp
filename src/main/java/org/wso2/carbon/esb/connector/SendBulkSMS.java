@@ -43,13 +43,10 @@ import org.jsmpp.bean.TypeOfNumber;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
-import org.jsmpp.util.AbsoluteTimeFormatter;
-import org.jsmpp.util.TimeFormatter;
 import org.wso2.carbon.connector.core.ConnectException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 
 public class SendBulkSMS extends AbstractSendSMS {
@@ -57,20 +54,18 @@ public class SendBulkSMS extends AbstractSendSMS {
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
 
-        SMSDTO dto = getDTO(messageContext);
-        SMPPSession session = getSession(messageContext);
-        TimeFormatter timeFormatter = new AbsoluteTimeFormatter();
-        //Defines the encoding scheme of the SMS message
-        GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
-                MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
-        //Destination addresses payload
-        Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
-
         if (log.isDebugEnabled()) {
             log.debug("Start Sending Bulk SMS");
         }
-
         try {
+            SMSDTO dto = getDTO(messageContext);
+            SMPPSession session = getSession(messageContext);
+            //Defines the encoding scheme of the SMS message
+            GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
+                    MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
+            //Destination addresses payload
+            Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
+
             SubmitMultiResult multiResult = session.submitMultiple(
                     dto.getServiceType(),
                     TypeOfNumber.valueOf(dto.getSourceAddressTon()),
@@ -80,7 +75,7 @@ public class SendBulkSMS extends AbstractSendSMS {
                     new ESMClass(dto.getEsmclass()),
                     (byte) dto.getProtocolid(),
                     (byte) dto.getPriorityflag(),
-                    timeFormatter.format(new Date()),
+                    dto.getScheduleDeliveryTime(),
                     dto.getValidityPeriod(),
                     new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
                     new ReplaceIfPresentFlag(dto.getReplaceIfPresentFlag()),

@@ -25,6 +25,7 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.Connector;
 
+import java.text.ParseException;
 import java.util.Iterator;
 
 /**
@@ -38,7 +39,7 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
      * @param messageContext synapse message context
      * @return SMS DTO with common attributes
      */
-    protected SMSDTO getDTO(MessageContext messageContext) {
+    protected SMSDTO getDTO(MessageContext messageContext) throws ParseException {
 
         SMSDTO dto = new SMSDTO();
         //Indicates SMS application service
@@ -71,6 +72,7 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
         dto.setMessage((String) getParameter(messageContext, SMPPConstants.SMS_MESSAGE));
         dto.setValidityPeriod((String) getParameter(messageContext, SMPPConstants.VALIDITY_PERIOD));
         dto.setSourceAddress((String) getParameter(messageContext, SMPPConstants.SOURCE_ADDRESS));
+        dto.setScheduleDeliveryTime((String) getParameter(messageContext, SMPPConstants.SCHEDULE_DELIVERY_TIME));
         return dto;
     }
 

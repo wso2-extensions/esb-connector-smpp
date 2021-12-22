@@ -27,14 +27,9 @@ import org.jsmpp.bean.*;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
-import org.jsmpp.util.AbsoluteTimeFormatter;
-import org.jsmpp.util.TimeFormatter;
-import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.Connector;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Send SMS message.
@@ -48,27 +43,24 @@ public class SendSMS extends AbstractSendSMS {
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
 
-        SMPPSession session = getSession(messageContext);
-        SMSDTO dto = getDTO(messageContext);
-        //Delivery of the message
-        TimeFormatter timeFormatter = new AbsoluteTimeFormatter();
-        //Defines the encoding scheme of the SMS message
-        GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
-                MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
-        //Type of number for destination
-        dto.setDistinationAddressTon((String) getParameter(messageContext,
-                SMPPConstants.DISTINATION_ADDRESS_TON));
-        //Numbering plan indicator for destination
-        dto.setDistinationAddressNpi((String) getParameter(messageContext,
-                SMPPConstants.DISTINATION_ADDRESS_NPI));
-        //Destination address of the short message
-        String distinationAddress = (String) getParameter(messageContext,
-                SMPPConstants.DISTINATION_ADDRESS);
-
         if (log.isDebugEnabled()) {
             log.debug("Start Sending SMS");
         }
         try {
+            SMPPSession session = getSession(messageContext);
+            SMSDTO dto = getDTO(messageContext);
+            //Defines the encoding scheme of the SMS message
+            GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
+                    MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
+            //Type of number for destination
+            dto.setDistinationAddressTon((String) getParameter(messageContext,
+                    SMPPConstants.DISTINATION_ADDRESS_TON));
+            //Numbering plan indicator for destination
+            dto.setDistinationAddressNpi((String) getParameter(messageContext,
+                    SMPPConstants.DISTINATION_ADDRESS_NPI));
+            //Destination address of the short message
+            String distinationAddress = (String) getParameter(messageContext,
+                    SMPPConstants.DISTINATION_ADDRESS);
             //Send the SMS message
             String messageId = session.submitShortMessage(
                     dto.getServiceType(),
@@ -80,7 +72,7 @@ public class SendSMS extends AbstractSendSMS {
                     distinationAddress,
                     new ESMClass(dto.getEsmclass()),
                     (byte) dto.getProtocolid(), (byte) dto.getPriorityflag(),
-                    timeFormatter.format(new Date()),
+                    dto.getScheduleDeliveryTime(),
                     dto.getValidityPeriod(),
                     new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
                     (byte) dto.getReplaceIfPresentFlag(),

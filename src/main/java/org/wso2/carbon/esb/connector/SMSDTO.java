@@ -18,6 +18,12 @@
 package org.wso2.carbon.esb.connector;
 
 import org.apache.commons.lang.StringUtils;
+import org.jsmpp.util.AbsoluteTimeFormatter;
+import org.jsmpp.util.TimeFormatter;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SMSDTO {
     private String serviceType;
@@ -37,6 +43,7 @@ public class SMSDTO {
     private String message;
     private String validityPeriod;
     private String sourceAddress;
+    private String scheduleDeliveryTime;
 
     public String getDistinationAddressTon() {
         return distinationAddressTon;
@@ -233,5 +240,19 @@ public class SMSDTO {
     public void setSourceAddress(String sourceAddress) {
 
         this.sourceAddress = sourceAddress;
+    }
+
+    public String getScheduleDeliveryTime() {
+
+        return scheduleDeliveryTime;
+    }
+
+    public void setScheduleDeliveryTime(String scheduleDeliveryTime) throws ParseException {
+        // if the schedule deliver time is not set, null is fine.
+        if (!StringUtils.isEmpty(scheduleDeliveryTime)) {
+            TimeFormatter timeFormatter = new AbsoluteTimeFormatter();
+            Date date = new SimpleDateFormat(SMPPConstants.TIME_FORMAT).parse(scheduleDeliveryTime);
+            this.scheduleDeliveryTime = timeFormatter.format(date);
+        }
     }
 }

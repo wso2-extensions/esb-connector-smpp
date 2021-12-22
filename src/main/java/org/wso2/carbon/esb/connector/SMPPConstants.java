@@ -39,6 +39,7 @@ public class SMPPConstants {
     public static final String SOURCE_ADDRESS_TON = "sourceAddressTon";
     public static final String SOURCE_ADDRESS_NPI = "sourceAddressNpi";
     public static final String SOURCE_ADDRESS = "sourceAddress";
+    public static final String SCHEDULE_DELIVERY_TIME = "scheduleDeliveryTime";
     public static final String DISTINATION_ADDRESS_TON = "distinationAddressTon";
     public static final String DISTINATION_ADDRESS_NPI = "distinationAddressNpi";
     public static final String DISTINATION_ADDRESS = "distinationAddress";
@@ -74,4 +75,5 @@ public class SMPPConstants {
     public static final String UNSUCCESSFUL_DELIVERY = "unsuccessfulDelivery";
     public static final int MAXIMUM_DESTINATIONS = 255;
     public static final String SMPP_ERROR = "SMPP_ERROR";
+    public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 }

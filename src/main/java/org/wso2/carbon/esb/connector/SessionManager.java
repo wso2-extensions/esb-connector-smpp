@@ -60,7 +60,7 @@ public class SessionManager {
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
                                       BindParameter bindParameter) throws IOException {
         SMPPSession smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
-        if (smppSession == null) {
+        if (smppSession == null || !smppSession.getSessionState().isBound()) {
             smppSession = new SMPPSession();
             smppSession.setEnquireLinkTimer(enquireLinkTimer);
             smppSession.setTransactionTimer(transactionTimer);
