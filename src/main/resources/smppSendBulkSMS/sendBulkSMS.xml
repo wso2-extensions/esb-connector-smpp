@@ -26,6 +26,7 @@
     <parameter name="alphabet" description="Used to defines the encoding scheme of the SMS message"/>
     <parameter name="message" description="Message to be sent"/>
     <parameter name="smscDeliveryReceipt" description="Indicator to signify if an SMSC delivery receipt or acknowledgment is required"/>
+    <parameter name="scheduleDeliveryTime" description="Scheduled time at which the message delivery should be first attempted"/>
     <parameter name="messageClass" description=""/>
     <parameter name="isCompressed" description=""/>
     <parameter name="esmclass" description=""/>
@@ -43,6 +44,7 @@
         <property name="alphabet" expression="$func:alphabet"/>
         <property name="message" expression="$func:message"/>
         <property name="smscDeliveryReceipt" expression="$func:smscDeliveryReceipt"/>
+        <property name="scheduleDeliveryTime" expression="$func:scheduleDeliveryTime"/>
         <property name="messageClass" expression="$func:messageClass"/>
         <property name="isCompressed" expression="$func:isCompressed"/>
         <property name="esmclass" expression="$func:esmclass"/>
