@@ -28,6 +28,7 @@ import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
 import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 
 import java.io.IOException;
 
@@ -43,11 +44,11 @@ public class SendSMS extends AbstractSendSMS {
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
 
+        SMPPSession session = getSession(messageContext);
         if (log.isDebugEnabled()) {
             log.debug("Start Sending SMS");
         }
         try {
-            SMPPSession session = getSession(messageContext);
             SMSDTO dto = getDTO(messageContext);
             //Defines the encoding scheme of the SMS message
             GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
@@ -84,6 +85,8 @@ public class SendSMS extends AbstractSendSMS {
             if (log.isDebugEnabled()) {
                 log.debug("Message submitted, message_id is " + messageId);
             }
+        } catch (ConfigurationException e) {
+            handleSMPPError("Invalid configuration " + e.getMessage(), e, messageContext);
         } catch (PDUException e) {
             // Invalid PDU parameter
             handleSMPPError("Invalid PDU parameter" + e.getMessage(), e, messageContext);

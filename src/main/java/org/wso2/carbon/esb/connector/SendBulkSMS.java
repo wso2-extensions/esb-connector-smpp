@@ -44,6 +44,7 @@ import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
 import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,12 +55,12 @@ public class SendBulkSMS extends AbstractSendSMS {
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
 
+        SMPPSession session = getSession(messageContext);
         if (log.isDebugEnabled()) {
             log.debug("Start Sending Bulk SMS");
         }
         try {
             SMSDTO dto = getDTO(messageContext);
-            SMPPSession session = getSession(messageContext);
             //Defines the encoding scheme of the SMS message
             GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
                     MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
@@ -83,6 +84,8 @@ public class SendBulkSMS extends AbstractSendSMS {
                     (byte) dto.getSubmitDefaultMsgId(),
                     dto.getMessage().getBytes());
             generateBulkResult(messageContext, multiResult);
+        } catch (ConfigurationException e) {
+            handleSMPPError("Invalid configuration " + e.getMessage(), e, messageContext);
         } catch (ResponseTimeoutException e) {
             handleSMPPError("Response timeout " + e.getMessage(), e, messageContext);
         } catch (PDUException e) {
