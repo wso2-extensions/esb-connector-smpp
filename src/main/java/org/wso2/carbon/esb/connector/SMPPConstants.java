@@ -76,4 +76,13 @@ public class SMPPConstants {
     public static final int MAXIMUM_DESTINATIONS = 255;
     public static final String SMPP_ERROR = "SMPP_ERROR";
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
+
+    public static final int SMPP_MAX_CHARACTERS = 153;
+
+    // Length of the rest of the UDH
+    public static final byte UDHIE_HEADER_LENGTH = 0x05;
+    // UDH to indicate a multipart message.
+    public static final byte UDHIE_IDENTIFIER_SAR = 0x00;
+    // Length of the sub header(the rest of the UDH)
+    public static final byte UDHIE_SAR_LENGTH = 0x03;
 }

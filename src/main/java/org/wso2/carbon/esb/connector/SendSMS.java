@@ -17,13 +17,21 @@
  */
 package org.wso2.carbon.esb.connector;
 
-import org.apache.axiom.om.*;
-
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.jsmpp.InvalidResponseException;
 import org.jsmpp.PDUException;
-import org.jsmpp.bean.*;
+import org.jsmpp.bean.Alphabet;
+import org.jsmpp.bean.ESMClass;
+import org.jsmpp.bean.GeneralDataCoding;
+import org.jsmpp.bean.MessageClass;
+import org.jsmpp.bean.NumberingPlanIndicator;
+import org.jsmpp.bean.RegisteredDelivery;
+import org.jsmpp.bean.SMSCDeliveryReceipt;
+import org.jsmpp.bean.TypeOfNumber;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
@@ -31,6 +39,12 @@ import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 
 import java.io.IOException;
+import java.util.Random;
+
+import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
+import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_HEADER_LENGTH;
+import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_IDENTIFIER_SAR;
+import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_SAR_LENGTH;
 
 /**
  * Send SMS message.
@@ -63,22 +77,7 @@ public class SendSMS extends AbstractSendSMS {
             String distinationAddress = (String) getParameter(messageContext,
                     SMPPConstants.DISTINATION_ADDRESS);
             //Send the SMS message
-            String messageId = session.submitShortMessage(
-                    dto.getServiceType(),
-                    TypeOfNumber.valueOf(dto.getSourceAddressTon()),
-                    NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
-                    dto.getSourceAddress(),
-                    TypeOfNumber.valueOf(dto.getDistinationAddressTon()),
-                    NumberingPlanIndicator.valueOf(dto.getDistinationAddressNpi()),
-                    distinationAddress,
-                    new ESMClass(dto.getEsmclass()),
-                    (byte) dto.getProtocolid(), (byte) dto.getPriorityflag(),
-                    dto.getScheduleDeliveryTime(),
-                    dto.getValidityPeriod(),
-                    new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
-                    (byte) dto.getReplaceIfPresentFlag(),
-                    dataCoding, (byte) dto.getSubmitDefaultMsgId(),
-                    dto.getMessage().getBytes());
+            String messageId = submitMessage(session, dto, dataCoding, distinationAddress);
 
             generateResult(messageContext, messageId);
 
@@ -104,6 +103,117 @@ public class SendSMS extends AbstractSendSMS {
         } catch (Exception e) {
             handleSMPPError("Unexpected error occur" + e.getMessage(), e, messageContext);
         }
+    }
+
+    /**
+     * This message will submit the message using the SMPPSession. If the message is long, it will be split into
+     * segments and send them as Multipart Messages using User data headers.
+     *
+     * @param session            The SMPPSession associated with the configs
+     * @param dto                The SMS DTO containing all the message related data
+     * @param dataCoding         Defines the encoding scheme of the SMS message
+     * @param destinationAddress The Destination address the SMS should sent
+     * @return String containing the message IDs of the sent SMS
+     */
+    private String submitMessage(SMPPSession session, SMSDTO dto, GeneralDataCoding dataCoding,
+                                 String destinationAddress) throws Exception {
+
+        StringBuilder messageIdList = new StringBuilder();
+
+        if (isLongSMS(dto)) {
+
+            byte[] messageBytes = dto.getMessage().getBytes();
+            int remainingByteCount = messageBytes.length % SMPP_MAX_CHARACTERS;
+
+            int segments = remainingByteCount > 0 ? messageBytes.length / SMPP_MAX_CHARACTERS + 1 :
+                    messageBytes.length / SMPP_MAX_CHARACTERS;
+
+            int start = 0;
+            int size = SMPP_MAX_CHARACTERS;
+
+            // generate new reference number
+            byte[] referenceNumber = new byte[1];
+            new Random().nextBytes(referenceNumber);
+
+            for (int segmentID = 1; segmentID <= segments; segmentID++) {
+                if (start + size > messageBytes.length) {
+                    size = remainingByteCount;
+                }
+
+                byte[] msgSegment = new byte[6 + size];
+                // UDH header
+                // doesn't include itself, its header length
+                msgSegment[0] = UDHIE_HEADER_LENGTH;
+                // SAR identifier
+                msgSegment[1] = UDHIE_IDENTIFIER_SAR;
+                // SAR length
+                msgSegment[2] = UDHIE_SAR_LENGTH;
+                // reference number (same for all messages)
+                msgSegment[3] = referenceNumber[0];
+                // total number of segments
+                msgSegment[4] = (byte) segments;
+                // segment number
+                msgSegment[5] = (byte) segmentID;
+
+                // copy the data into the array
+                System.arraycopy(messageBytes, start, msgSegment, 6, size);
+
+                if (log.isDebugEnabled()) {
+                    log.info("Message Size of segment " + segmentID + " : " + msgSegment.length);
+                }
+
+                String messageId =
+                        submitShortMessage(session, dto, dataCoding, destinationAddress, msgSegment);
+
+                if (log.isDebugEnabled()) {
+                    log.info("MessageId of segment " + segmentID + " : " + messageId);
+                }
+
+                messageIdList.append(messageId);
+                if (segmentID < segments) {
+                    messageIdList.append(", ");
+                }
+                start += size;
+            }
+        } else {
+            String messageId = submitShortMessage(session, dto, dataCoding, destinationAddress,
+                    dto.getMessage().getBytes());
+            messageIdList.append(messageId);
+        }
+        return messageIdList.toString();
+    }
+
+    private static String submitShortMessage(SMPPSession session, SMSDTO dto, GeneralDataCoding dataCoding,
+                                             String destinationAddress, byte[] message)
+            throws Exception {
+
+        return session.submitShortMessage(
+                dto.getServiceType(),
+                TypeOfNumber.valueOf(dto.getSourceAddressTon()),
+                NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
+                dto.getSourceAddress(),
+                TypeOfNumber.valueOf(dto.getDistinationAddressTon()),
+                NumberingPlanIndicator.valueOf(dto.getDistinationAddressNpi()),
+                destinationAddress,
+                new ESMClass(dto.getEsmclass()),
+                (byte) dto.getProtocolid(), (byte) dto.getPriorityflag(),
+                dto.getScheduleDeliveryTime(),
+                dto.getValidityPeriod(),
+                new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
+                (byte) dto.getReplaceIfPresentFlag(),
+                dataCoding, (byte) dto.getSubmitDefaultMsgId(),
+                message);
+    }
+
+    /**
+     * This method will check whether the message length is greater than maximum SMPP character limit.
+     *
+     * @param dto The SMS DTO containing all the message related data
+     * @return true if the message length is greater than maximum SMPP character limit
+     */
+    private boolean isLongSMS(SMSDTO dto) {
+
+        return dto.getMessage().getBytes().length > SMPP_MAX_CHARACTERS;
     }
 
     /**
