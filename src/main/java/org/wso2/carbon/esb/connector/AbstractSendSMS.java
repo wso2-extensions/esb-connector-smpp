@@ -29,6 +29,8 @@ import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 import java.text.ParseException;
 import java.util.Iterator;
 
+import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
+
 /**
  * Parent for SMS Send Operations
  */
@@ -127,5 +129,16 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
     protected void handleSMPPError(String msg, Exception e, MessageContext messageContext) {
         messageContext.setProperty(SMPPConstants.SMPP_ERROR, e.getMessage());
         handleException(msg, e, messageContext);
+    }
+
+    /**
+     * This method will check whether the message length is greater than maximum SMPP character limit.
+     *
+     * @param dto The SMS DTO containing all the message related data
+     * @return true if the message length is greater than maximum SMPP character limit
+     */
+    protected boolean isLongSMS(SMSDTO dto) {
+
+        return dto.getMessage().getBytes().length > SMPP_MAX_CHARACTERS;
     }
 }

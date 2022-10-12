@@ -71,6 +71,7 @@ public class SMPPConstants {
     public static final String DESTINATION_ADDRESS_NUMBERING_PLAN= "numberingPlan";
     public static final String DESTINATION_ADDRESS_MOBILE_NUMBER= "mobileNumber";
     public static final String RESULTS = "results";
+    public static final String RESULT = "result";
     public static final String UNSUCCESSFUL_DELIVERIES = "unsuccessfulDeliveries";
     public static final String UNSUCCESSFUL_DELIVERY = "unsuccessfulDelivery";
     public static final int MAXIMUM_DESTINATIONS = 255;

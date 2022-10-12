@@ -206,17 +206,6 @@ public class SendSMS extends AbstractSendSMS {
     }
 
     /**
-     * This method will check whether the message length is greater than maximum SMPP character limit.
-     *
-     * @param dto The SMS DTO containing all the message related data
-     * @return true if the message length is greater than maximum SMPP character limit
-     */
-    private boolean isLongSMS(SMSDTO dto) {
-
-        return dto.getMessage().getBytes().length > SMPP_MAX_CHARACTERS;
-    }
-
-    /**
      * Generate the result is used to display the result(messageId) after sending message is complete.
      *
      * @param messageContext The message context that is used in generate result mediation flow.

@@ -49,6 +49,13 @@ import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
+import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_HEADER_LENGTH;
+import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_IDENTIFIER_SAR;
+import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_SAR_LENGTH;
 
 public class SendBulkSMS extends AbstractSendSMS {
 
@@ -67,23 +74,65 @@ public class SendBulkSMS extends AbstractSendSMS {
             //Destination addresses payload
             Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
 
-            SubmitMultiResult multiResult = session.submitMultiple(
-                    dto.getServiceType(),
-                    TypeOfNumber.valueOf(dto.getSourceAddressTon()),
-                    NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
-                    dto.getSourceAddress(),
-                    generateDestinationAddresses(addresses),
-                    new ESMClass(dto.getEsmclass()),
-                    (byte) dto.getProtocolid(),
-                    (byte) dto.getPriorityflag(),
-                    dto.getScheduleDeliveryTime(),
-                    dto.getValidityPeriod(),
-                    new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
-                    new ReplaceIfPresentFlag(dto.getReplaceIfPresentFlag()),
-                    dataCoding,
-                    (byte) dto.getSubmitDefaultMsgId(),
-                    dto.getMessage().getBytes());
-            generateBulkResult(messageContext, multiResult);
+            if (isLongSMS(dto)) {
+
+                List<SubmitMultiResult> multiResultList = new ArrayList<>();
+
+                byte[] messageBytes = dto.getMessage().getBytes();
+                int remainingByteCount = messageBytes.length % SMPP_MAX_CHARACTERS;
+
+                int segments = remainingByteCount > 0 ? messageBytes.length / SMPP_MAX_CHARACTERS + 1 :
+                        messageBytes.length / SMPP_MAX_CHARACTERS;
+
+                int start = 0;
+                int size = SMPP_MAX_CHARACTERS;
+
+                // generate new reference number
+                byte[] referenceNumber = new byte[1];
+                new Random().nextBytes(referenceNumber);
+
+                for (int segmentID = 1; segmentID <= segments; segmentID++) {
+                    if (start + size > messageBytes.length) {
+                        size = remainingByteCount;
+                    }
+
+                    byte[] msgSegment = new byte[6 + size];
+                    // UDH header
+                    // doesn't include itself, its header length
+                    msgSegment[0] = UDHIE_HEADER_LENGTH;
+                    // SAR identifier
+                    msgSegment[1] = UDHIE_IDENTIFIER_SAR;
+                    // SAR length
+                    msgSegment[2] = UDHIE_SAR_LENGTH;
+                    // reference number (same for all messages)
+                    msgSegment[3] = referenceNumber[0];
+                    // total number of segments
+                    msgSegment[4] = (byte) segments;
+                    // segment number
+                    msgSegment[5] = (byte) segmentID;
+
+                    // copy the data into the array
+                    System.arraycopy(messageBytes, start, msgSegment, 6, size);
+
+                    if (log.isDebugEnabled()) {
+                        log.info("Message Size of segment " + segmentID + " : " + msgSegment.length);
+                    }
+
+                    SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
+                            msgSegment);
+
+                    if (log.isDebugEnabled()) {
+                        log.info("MessageId of segment " + segmentID + " : " + multiResult.getMessageId());
+                    }
+                    multiResultList.add(multiResult);
+                    start += size;
+                }
+                generateBulkResultForLongSMS(messageContext, multiResultList);
+            } else {
+                SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
+                        dto.getMessage().getBytes());
+                generateBulkResult(messageContext, multiResult);
+            }
         } catch (ConfigurationException e) {
             handleSMPPError("Invalid configuration " + e.getMessage(), e, messageContext);
         } catch (ResponseTimeoutException e) {
@@ -99,6 +148,26 @@ public class SendBulkSMS extends AbstractSendSMS {
         } catch (Exception e) {
             handleSMPPError("Unexpected error occurred " + e.getMessage(), e, messageContext);
         }
+    }
+
+    private SubmitMultiResult submitMultipleMessages(SMPPSession session, SMSDTO dto, GeneralDataCoding dataCoding,
+                                                     Object addresses, byte[] message) throws Exception{
+        return session.submitMultiple(
+                dto.getServiceType(),
+                TypeOfNumber.valueOf(dto.getSourceAddressTon()),
+                NumberingPlanIndicator.valueOf(dto.getSourceAddressNpi()),
+                dto.getSourceAddress(),
+                generateDestinationAddresses(addresses),
+                new ESMClass(dto.getEsmclass()),
+                (byte) dto.getProtocolid(),
+                (byte) dto.getPriorityflag(),
+                dto.getScheduleDeliveryTime(),
+                dto.getValidityPeriod(),
+                new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
+                new ReplaceIfPresentFlag(dto.getReplaceIfPresentFlag()),
+                dataCoding,
+                (byte) dto.getSubmitDefaultMsgId(),
+                message);
     }
 
     /**
@@ -182,10 +251,44 @@ public class SendBulkSMS extends AbstractSendSMS {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
+        OMElement root = factory.createOMElement(SMPPConstants.RESULTS, ns);
+        generateBulkResultStatus(factory, root, ns, smr);
+        preparePayload(messageContext, root);
+    }
+
+    /**
+     * Create the response payload using the SubmitMultiResult List for Long messages.
+     *
+     * @param messageContext Synapse message context
+     * @param smrList        List of SubmitMultiResult of the bulk long message request
+     */
+    private void generateBulkResultForLongSMS(MessageContext messageContext, List<SubmitMultiResult> smrList) {
+
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
+        OMElement root = factory.createOMElement(SMPPConstants.RESULTS, ns);
+
+        for (SubmitMultiResult smr : smrList) {
+            OMElement result = factory.createOMElement(SMPPConstants.RESULT, ns);
+            generateBulkResultStatus(factory, result, ns, smr);
+            root.addChild(result);
+        }
+        preparePayload(messageContext, root);
+    }
+
+    /**
+     * Create the message status payload using the SubmitMultiResult.
+     *
+     * @param factory OMFactory used to generate the OM elements
+     * @param parent  OMElement to which the children are added
+     * @param ns      OMNamespace related to the connector response
+     * @param smr     SubmitMultiResult returned after sending the message
+     */
+    private void generateBulkResultStatus(OMFactory factory, OMElement parent, OMNamespace ns, SubmitMultiResult smr) {
+
         OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
         messageElement.setText(smr.getMessageId());
 
-        OMElement root = factory.createOMElement(SMPPConstants.RESULTS, ns);
         OMElement unsuccessfulDeliveries = factory.createOMElement(SMPPConstants.UNSUCCESSFUL_DELIVERIES, ns);
 
         for (int i = 1; i < smr.getUnsuccessDeliveries().length; i++) {
@@ -201,10 +304,7 @@ public class SendBulkSMS extends AbstractSendSMS {
 
             unsuccessfulDeliveries.addChild(unsuccessfulDelivery);
         }
-
-        root.addChild(messageElement);
-        root.addChild(unsuccessfulDeliveries);
-
-        preparePayload(messageContext, root);
+        parent.addChild(messageElement);
+        parent.addChild(unsuccessfulDeliveries);
     }
 }
