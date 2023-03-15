@@ -94,7 +94,7 @@ public class SMSConfig extends AbstractConnector implements Connector {
                         host, port, new BindParameter(BindType.BIND_TX,
                                 systemId, password, systemType,
                                 TypeOfNumber.valueOf(addressTON),
-                                NumberingPlanIndicator.valueOf(addressNPI), null));
+                                NumberingPlanIndicator.valueOf(addressNPI), null), SMPPConstants.MAX_RETRY_COUNT);
                 //Set the user session to message context
                 messageContext.setProperty(SMPPConstants.SMPP_SESSION, session);
                 if (log.isDebugEnabled()) {

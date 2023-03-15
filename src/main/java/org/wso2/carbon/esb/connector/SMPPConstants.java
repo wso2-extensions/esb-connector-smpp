@@ -76,6 +76,7 @@ public class SMPPConstants {
     public static final String UNSUCCESSFUL_DELIVERY = "unsuccessfulDelivery";
     public static final int MAXIMUM_DESTINATIONS = 255;
     public static final String SMPP_ERROR = "SMPP_ERROR";
+    public static final int MAX_RETRY_COUNT = 3;
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 
     public static final int SMPP_MAX_CHARACTERS = 153;
