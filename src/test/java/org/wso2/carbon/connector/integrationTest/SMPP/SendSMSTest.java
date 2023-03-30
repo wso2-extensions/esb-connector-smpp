@@ -38,8 +38,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.carbon.esb.connector.SMPPConstants;
-import org.wso2.carbon.esb.connector.SMSConfig;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
+import org.wso2.carbon.esb.connector.operations.SMSConfig;
 import org.apache.synapse.mediators.template.TemplateContext;
 
 
@@ -48,7 +48,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 import org.powermock.api.mockito.PowerMockito;
-import org.wso2.carbon.esb.connector.SendSMS;
+import org.wso2.carbon.esb.connector.operations.SendSMS;
 
 import java.util.Stack;
 
@@ -106,9 +106,9 @@ public class SendSMSTest {
         templateContext.getMappedValues().put(SMPPConstants.SOURCE_ADDRESS_TON, "NETWORK_SPECIFIC");
         templateContext.getMappedValues().put(SMPPConstants.SOURCE_ADDRESS_NPI, "INTERNET");
         templateContext.getMappedValues().put(SMPPConstants.SOURCE_ADDRESS, "16116");
-        templateContext.getMappedValues().put(SMPPConstants.DISTINATION_ADDRESS_TON, "SUBSCRIBER_NUMBER");
-        templateContext.getMappedValues().put(SMPPConstants.DISTINATION_ADDRESS_NPI, "LAND_MOBILE");
-        templateContext.getMappedValues().put(SMPPConstants.DISTINATION_ADDRESS, "628176504657");
+        templateContext.getMappedValues().put(SMPPConstants.DESTINATION_ADDRESS_TON, "SUBSCRIBER_NUMBER");
+        templateContext.getMappedValues().put(SMPPConstants.DESTINATION_ADDRESS_NPI, "LAND_MOBILE");
+        templateContext.getMappedValues().put(SMPPConstants.DESTINATION_ADDRESS, "628176504657");
         templateContext.getMappedValues().put(SMPPConstants.ESM_CLASS, "0");
         templateContext.getMappedValues().put(SMPPConstants.PROTOCOL_ID, "1");
         templateContext.getMappedValues().put(SMPPConstants.PRIORITY_FLAG, "0");

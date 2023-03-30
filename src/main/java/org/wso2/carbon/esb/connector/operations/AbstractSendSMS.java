@@ -15,21 +15,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.operations;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.synapse.MessageContext;
-import org.jsmpp.session.SMPPSession;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.Connector;
-import org.wso2.carbon.esb.connector.exception.ConfigurationException;
+import org.wso2.carbon.esb.connector.dto.SMSDTO;
+import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Iterator;
 
-import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
+import static org.wso2.carbon.esb.connector.utils.SMPPConstants.SMPP_MAX_CHARACTERS;
 
 /**
  * Parent for SMS Send Operations
@@ -99,25 +100,6 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
             child.detach();
         }
         soapBody.addChild(element);
-    }
-
-    /**
-     * Returns the SMPP session from the message context.
-     *
-     * @param messageContext synapse message context
-     * @return SMPP session
-     * @throws ConnectException if the session does not exist
-     */
-    protected SMPPSession getSession(MessageContext messageContext) throws ConnectException {
-
-        SMPPSession session = (SMPPSession) messageContext.getProperty(SMPPConstants.SMPP_SESSION);
-        if (session == null) {
-            String msg = "No Active SMPP Connection found to perform the action. Please trigger SMPP.INIT Prior to " +
-                    "SendSMS";
-            log.error(msg);
-            throw new ConnectException(msg);
-        }
-        return session;
     }
 
     /**

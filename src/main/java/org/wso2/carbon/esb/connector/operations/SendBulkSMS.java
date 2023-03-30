@@ -15,13 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.operations;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mysql.jdbc.StringUtils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -45,7 +44,11 @@ import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
 import org.jsmpp.session.SubmitMultiResult;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.esb.connector.exception.ConfigurationException;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
+import org.wso2.carbon.esb.connector.utils.SMPPUtils;
+import org.wso2.carbon.esb.connector.dto.SMSDTO;
+import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
+import org.wso2.carbon.esb.connector.store.SessionsStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,33 +56,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
-import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_HEADER_LENGTH;
-import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_IDENTIFIER_SAR;
-import static org.wso2.carbon.esb.connector.SMPPConstants.UDHIE_SAR_LENGTH;
+import static org.wso2.carbon.esb.connector.utils.SMPPConstants.SMPP_MAX_CHARACTERS;
+import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_HEADER_LENGTH;
+import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_IDENTIFIER_SAR;
+import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_SAR_LENGTH;
 
 public class SendBulkSMS extends AbstractSendSMS {
 
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
 
-        SMPPSession session = getSession(messageContext);
         if (log.isDebugEnabled()) {
             log.debug("Start Sending Bulk SMS");
         }
         try {
             SMSDTO dto = getDTO(messageContext);
+            String sessionName = SMPPUtils.getSessionName(messageContext);
+            SMPPSession session = SessionsStore.getSMPPSession(sessionName);
             //Defines the encoding scheme of the SMS message
             GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
                     MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
             //Destination addresses payload
             Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
-            byte[] messageBytes = null;
-            if (StringUtils.isNullOrEmpty(dto.getCharset())) {
-                messageBytes = dto.getMessage().getBytes();
-            } else {
-                messageBytes = dto.getMessage().getBytes(dto.getCharset());
-            }
+            byte[] messageBytes = dto.getMessage().getBytes(dto.getCharset());
             if (isLongSMS(dto)) {
 
                 List<SubmitMultiResult> multiResultList = new ArrayList<>();

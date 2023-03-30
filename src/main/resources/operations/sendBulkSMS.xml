@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~  Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~  WSO2 Inc. licenses this file to you under the Apache License,
  ~  Version 2.0 (the "License"); you may not use this file except
@@ -17,18 +17,17 @@
  ~  under the License.
 -->
 
-<template name="sendSMS" xmlns="http://ws.apache.org/ns/synapse">
+<template name="sendBulkSMS" xmlns="http://ws.apache.org/ns/synapse">
     <parameter name="serviceType" description="Indicates SMS application service"/>
     <parameter name="sourceAddressTon" description="Type of number for source address"/>
     <parameter name="sourceAddressNpi" description="Numbering plan indicator for source address"/>
     <parameter name="sourceAddress" description="Source address"/>
-    <parameter name="distinationAddressTon" description="Type of number for destination"/>
-    <parameter name="distinationAddressNpi" description="Numbering plan indicator for destination"/>
-    <parameter name="distinationAddress" description="Destination address of the short message"/>
-    <parameter name="alphabet" description="Used to define the encoding scheme of the SMS message"/>
-    <parameter name="charset" description="Used to define the character encoding of the SMS message"/>
+    <parameter name="destinationAddresses" description="Destination addresses of the message"/>
+    <parameter name="alphabet" description="Encoding scheme of the SMS message"/>
+    <parameter name="charset" description="Character encoding of the SMS message"/>
     <parameter name="message" description="Message to be sent"/>
-    <parameter name="smscDeliveryReceipt" description="Indicator to signify if an SMSC delivery receipt or acknowledgment is required"/>
+    <parameter name="smscDeliveryReceipt"
+               description="Indicates if an SMSC delivery receipt or acknowledgment is required"/>
     <parameter name="scheduleDeliveryTime" description="Scheduled time at which the message delivery should be first attempted"/>
     <parameter name="messageClass" description=""/>
     <parameter name="isCompressed" description=""/>
@@ -43,10 +42,9 @@
         <property name="sourceAddressTon" expression="$func:sourceAddressTon"/>
         <property name="sourceAddressNpi" expression="$func:sourceAddressNpi"/>
         <property name="sourceAddress" expression="$func:sourceAddress"/>
-        <property name="distinationAddressTon" expression="$func:distinationAddressTon"/>
-        <property name="distinationAddressNpi" expression="$func:distinationAddressNpi"/>
-        <property name="distinationAddress" expression="$func:distinationAddress"/>
+        <property name="destinationAddresses" expression="$func:destinationAddresses"/>
         <property name="alphabet" expression="$func:alphabet"/>
+        <property name="charset" expression="$func:charset"/>
         <property name="message" expression="$func:message"/>
         <property name="smscDeliveryReceipt" expression="$func:smscDeliveryReceipt"/>
         <property name="scheduleDeliveryTime" expression="$func:scheduleDeliveryTime"/>
@@ -58,6 +56,6 @@
         <property name="replaceIfPresentFlag" expression="$func:replaceIfPresentFlag"/>
         <property name="submitDefaultMsgId" expression="$func:submitDefaultMsgId"/>
         <property name="validityPeriod" expression="$func:validityPeriod"/>
-        <class name="org.wso2.carbon.esb.connector.SendSMS"/>
+        <class name="org.wso2.carbon.esb.connector.operations.SendBulkSMS"/>
     </sequence>
 </template>

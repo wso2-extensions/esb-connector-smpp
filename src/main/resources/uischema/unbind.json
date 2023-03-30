@@ -1,0 +1,30 @@
+{
+  "connectorName": "SMPP",
+  "operationName": "unbind",
+  "title": "Unbind SMSC Connection",
+  "help": "Unbind SMSC Connection",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "SMSC Connection Name",
+              "inputType": "connection",
+              "allowedConnectionTypes": [
+                "init"
+              ],
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "SMSC Connection to unbind"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -15,12 +15,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.operations;
 
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.Connector;
+import org.wso2.carbon.esb.connector.utils.SMPPUtils;
+import org.wso2.carbon.esb.connector.utils.SessionManager;
+import org.wso2.carbon.esb.connector.store.SessionsStore;
+
 /**
  * The SMSUnbind class is to provide the unbind capability as a template
  */
@@ -31,13 +35,9 @@ public class SMSUnbind extends AbstractConnector implements Connector {
      */
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
-        //IP address of the SMSC
-        String host = (String) getParameter(messageContext, SMPPConstants.HOST);
-        //port to access the SMSC
-        int port = Integer.parseInt((String) getParameter(messageContext, SMPPConstants.PORT));
-        //Identifies the ESME system requesting to bind as a transmitter with the SMSC.
-        String systemId = (String) getParameter(messageContext, SMPPConstants.SYSTEM_ID);
-        SessionManager.getInstance().unbind(host, port, systemId);
+        String sessionName = SMPPUtils.getSessionName(messageContext);
+        SessionManager.getInstance().unbind(sessionName);
+        SessionsStore.removeSMPPSession(sessionName);
         log.info("SMSC Connection unbind is completed.");
     }
 }

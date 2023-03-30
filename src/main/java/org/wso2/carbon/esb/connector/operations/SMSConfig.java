@@ -15,18 +15,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.operations;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.bean.NumberingPlanIndicator;
 import org.jsmpp.bean.TypeOfNumber;
+import org.jsmpp.extra.SessionState;
 import org.jsmpp.session.BindParameter;
 import org.jsmpp.session.SMPPSession;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.Connector;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
+import org.wso2.carbon.esb.connector.utils.SMPPUtils;
+import org.wso2.carbon.esb.connector.utils.SessionManager;
+import org.wso2.carbon.esb.connector.store.SessionsStore;
 
 import java.io.IOException;
 /**
@@ -39,7 +44,15 @@ public class SMSConfig extends AbstractConnector implements Connector {
      */
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
-        SMPPSession session = null;
+        String sessionName = SMPPUtils.getSessionName(messageContext);
+        SMPPSession session = SessionsStore.getSMPPSession(sessionName);
+        if (session != null) {
+            if (SessionState.CLOSED.equals(session.getSessionState())) {
+                SessionsStore.removeSMPPSession(sessionName);
+            } else {
+                return;
+            }
+        }
         //IP address of the SMSC
         String host = (String) getParameter(messageContext, SMPPConstants.HOST);
         //port to access the SMSC
@@ -48,13 +61,19 @@ public class SMSConfig extends AbstractConnector implements Connector {
         String systemId = (String) getParameter(messageContext, SMPPConstants.SYSTEM_ID);
         //The password may be used by the SMSC to authenticate the ESME requesting to bind
         String password = (String) getParameter(messageContext, SMPPConstants.PASSWORD);
+
+        if (StringUtils.isEmpty(host) || StringUtils.isEmpty((String) getParameter(messageContext, SMPPConstants.PORT))
+                || StringUtils.isEmpty(systemId) || StringUtils.isEmpty(password)) {
+            handleException("Missing one or more mandatory bind parameter(s)", messageContext);
+        }
+
         //Used to check whether SMSC is connected or not
         String enquirelinktimer = (String) getParameter(messageContext,
                 SMPPConstants.ENQUIRELINK_TIMER);
         int enquireLinkTimer;
         if (StringUtils.isEmpty(enquirelinktimer)) {
             //set it to default value
-            enquireLinkTimer = 50000;
+            enquireLinkTimer = SMPPConstants.ENQUIRELINK_TIMER_DEFAULT;
         } else {
             enquireLinkTimer = Integer.parseInt(enquirelinktimer);
         }
@@ -64,7 +83,7 @@ public class SMSConfig extends AbstractConnector implements Connector {
         int transactionTimer;
         if (StringUtils.isEmpty(transactiontimer)) {
             //set it to default value
-            transactionTimer = 100;
+            transactionTimer = SMPPConstants.TRANSACTION_TIMER_DEFAULT;
         } else {
             transactionTimer = Integer.parseInt(transactiontimer);
         }
@@ -83,22 +102,16 @@ public class SMSConfig extends AbstractConnector implements Connector {
         if (StringUtils.isEmpty(addressNPI)) {
             addressNPI = SMPPConstants.UNKNOWN;
         }
-        if (StringUtils.isEmpty(host) ||
-                StringUtils.isEmpty((String) getParameter(messageContext, SMPPConstants.PORT))
-                || StringUtils.isEmpty(systemId) || StringUtils.isEmpty(password)) {
-            handleException("one or more Bind parameter is not set",messageContext);
-        }
 
         try {
                 session = SessionManager.getInstance().getSmppSession(enquireLinkTimer, transactionTimer,
                         host, port, new BindParameter(BindType.BIND_TX,
                                 systemId, password, systemType,
                                 TypeOfNumber.valueOf(addressTON),
-                                NumberingPlanIndicator.valueOf(addressNPI), null), SMPPConstants.MAX_RETRY_COUNT);
-                //Set the user session to message context
-                messageContext.setProperty(SMPPConstants.SMPP_SESSION, session);
+                                NumberingPlanIndicator.valueOf(addressNPI), null), SMPPConstants.MAX_RETRY_COUNT, sessionName);
+                SessionsStore.addSMPPSession(sessionName, session);
                 if (log.isDebugEnabled()) {
-                    log.debug("Conected and bind to " + host);
+                    log.debug("Connected and bind to " + host);
                 }
         } catch (IOException e) {
             handleException("Error while configuring: " + e.getMessage(), e, messageContext);

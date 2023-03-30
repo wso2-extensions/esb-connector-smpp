@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.esb.connector.exception;
+package org.wso2.carbon.esb.connector.exceptions;
 
 import org.wso2.carbon.connector.core.ConnectException;
 

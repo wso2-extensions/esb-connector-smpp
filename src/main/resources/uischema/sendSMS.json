@@ -1,0 +1,258 @@
+{
+  "connectorName": "SMPP",
+  "operationName": "sendSMS",
+  "title": "Send SMS",
+  "help": "Send SMS Message",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "SMSC Connection Name",
+              "inputType": "connection",
+              "allowedConnectionTypes": [
+                "init"
+              ],
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "SMSC Connection to be used"
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "serviceType",
+                    "displayName": "Service Type",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "SMS application service"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "sourceAddressTon",
+                    "displayName": "Source Address Type of Number",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Type of number for source address"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "sourceAddressNpi",
+                    "displayName": "Source Address Numbering Plan Indicator",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Numbering plan for source address"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "sourceAddress",
+                    "displayName": "Source Address",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Source address"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "destinationAddressTon",
+                    "displayName": "Destination Address Type of Number",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Type of number for destination"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "destinationAddressNpi",
+                    "displayName": "Destination Address Numbering Plan Indicator",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Numbering plan for destination"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "destinationAddress",
+                    "displayName": "Destination Address",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Destination address of the short message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "alphabet",
+                    "displayName": "SMS Message Encoding Scheme",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Encoding scheme of the SMS message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "charset",
+                    "displayName": "SMS Message Character Encoding",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Character encoding of the SMS message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "message",
+                    "displayName": "Message",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Message to be sent"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "smscDeliveryReceipt",
+                    "displayName": "SMSC Delivery Receipt Indicator",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Indicates if an SMSC delivery receipt or acknowledgment is required"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "scheduleDeliveryTime",
+                    "displayName": "Scheduled Delivery Time",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Scheduled time at which the message delivery should be first attempted"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "messageClass",
+                    "displayName": "Message Class",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Type of the message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "isCompressed",
+                    "displayName": "Is Compressed",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Message body is compressed or not"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "esmclass",
+                    "displayName": "ESM Class",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Messaging mode and message type"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "protocolid",
+                    "displayName": "Protocol ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Protocol identifier of the SMSC protocol to be used"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "priorityflag",
+                    "displayName": "Priority Flag",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Priority level of the message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "replaceIfPresentFlag",
+                    "displayName": "Replace If Present Flag",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Indicates whether an existing message should be replaced or not"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "submitDefaultMsgId",
+                    "displayName": "Submit Default Message ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Message ID to be used for the submitted message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "validityPeriod",
+                    "displayName": "Validity Period",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Time period during which an SMS message can be delivered"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

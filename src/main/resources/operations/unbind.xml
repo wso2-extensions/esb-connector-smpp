@@ -16,11 +16,9 @@
  ~  specific language governing permissions and limitations
  ~  under the License.
 -->
-<component name="unbind" type="synapse/template">
-    <subComponents>
-        <component name="unbind">
-            <file>unbind.xml</file>
-            <description>Unbind the SMSC connection</description>
-        </component>
-    </subComponents>
-</component>
+
+<template name="unbind" xmlns="http://ws.apache.org/ns/synapse">
+    <sequence>
+        <class name="org.wso2.carbon.esb.connector.operations.SMSUnbind"/>
+    </sequence>
+</template>

@@ -15,38 +15,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsmpp.session.BindParameter;
 import org.jsmpp.session.SMPPSession;
+import org.wso2.carbon.esb.connector.store.SessionsStore;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 /**
  * The Session Manager maintains the bind connection with smsc for reuse until a unbind is triggered.
  */
 public class SessionManager {
 
     protected Log log = LogFactory.getLog(this.getClass());
-    private Map<String, SMPPSession> smppSessionList;
     private static SessionManager sessionManager;
-
-    private SessionManager() {
-        smppSessionList = new HashMap();
-    }
 
     public static synchronized SessionManager getInstance() {
         if (sessionManager == null)
             sessionManager = new SessionManager();
         return sessionManager;
-    }
-
-    private String getKey(String host, int port, String systemId) {
-        return host + SMPPConstants.CONCT_CHAR + port + SMPPConstants.CONCT_CHAR + systemId;
-
     }
 
     /**
@@ -59,61 +49,55 @@ public class SessionManager {
      * @throws IOException
      */
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
-                                      BindParameter bindParameter, int retryCount) throws IOException {
-        SMPPSession smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
+                                      BindParameter bindParameter, int retryCount, String sessionName) throws IOException {
+        SMPPSession session = SessionsStore.getSMPPSession(sessionName);
         // If the session is not available or not bound, create a new session and bind in a synchronized manner.
-        if (smppSession == null) {
+        if (session == null) {
             synchronized (this) {
-                smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
-                if (smppSession == null) {
-                    smppSession = new SMPPSession();
-                    smppSession.setEnquireLinkTimer(enquireLinkTimer);
-                    smppSession.setTransactionTimer(transactionTimer);
-                    smppSession.connectAndBind(host, port, bindParameter);
+                session = SessionsStore.getSMPPSession(sessionName);
+                if (session == null) {
+                    session = new SMPPSession();
+                    session.setEnquireLinkTimer(enquireLinkTimer);
+                    session.setTransactionTimer(transactionTimer);
+                    session.connectAndBind(host, port, bindParameter);
                     if (log.isDebugEnabled()) {
                         log.debug("A new session is Connected and bind to host: " + host + ", port: " + port +
                                 ", systemId: " + bindParameter.getSystemId() +
-                                ", Session ID: " + smppSession.getSessionId());
+                                ", Session ID: " + session.getSessionId());
                     }
-                    smppSessionList.putIfAbsent(getKey(host, port, bindParameter.getSystemId()), smppSession);
                 }
             }
         }
         //handle unbound sessions
-        if (retryCount > 0 && !smppSession.getSessionState().isBound()) {
+        if (retryCount > 0 && !session.getSessionState().isBound()) {
             if (log.isDebugEnabled()) {
                 log.debug("Session is unbound. Unbinding the session and creating a new one, " +
-                        "Session ID: " + smppSession.getSessionId() + ", Session state: " + smppSession.getSessionState());
+                        "Session ID: " + session.getSessionId() + ", Session state: " + session.getSessionState());
             }
-            unbind(host, port, bindParameter.getSystemId());
-            return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount - 1);
+            unbind(sessionName);
+            return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount - 1, sessionName);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("Returning the session, " + "Session ID:  " +
-                        smppSession.getSessionId() + ", Session state: " + smppSession.getSessionState() +
+                        session.getSessionId() + ", Session state: " + session.getSessionState() +
                         " for host: " + host + ", port: " + port + ", systemId: " + bindParameter.getSystemId());
             }
-            return smppSession;
+            return session;
         }
     }
 
     /**
-     * @param host host name or ip of the SMSC.
-     * @param port connection port of the SMSC.
-     * @param systemId systemID used to bind the connection to SMSC.
+     * @param sessionName sessionName to identify the sessions
      */
-    public void unbind(String host, int port, String systemId) {
-        SMPPSession smppSession = smppSessionList.get(getKey(host, port, systemId));
-        if (smppSession != null) {
+    public void unbind(String sessionName) {
+        SMPPSession session = SessionsStore.getSMPPSession(sessionName);
+        if (session != null) {
             if (log.isDebugEnabled()) {
-                log.debug("Unbinding the connection with SMSC host: " + host + " port: " + port +
-                        "Session ID: " + smppSession.getSessionId());
+                log.debug("Unbinding the connection with Session ID: " + session.getSessionId());
             }
-            smppSession.unbindAndClose();
-            smppSessionList.remove(getKey(host, port, systemId));
+            session.unbindAndClose();
         } else {
-            log.info("No active smpp session found for unbinding for host: " + host + " port: "
-                    + port + " systemId: " + systemId);
+            log.info("No active smpp session found for unbinding for sessionName: " + sessionName);
         }
     }
 }
