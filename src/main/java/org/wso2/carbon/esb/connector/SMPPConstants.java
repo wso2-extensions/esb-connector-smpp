@@ -44,6 +44,7 @@ public class SMPPConstants {
     public static final String DISTINATION_ADDRESS_NPI = "distinationAddressNpi";
     public static final String DISTINATION_ADDRESS = "distinationAddress";
     public static final String ALPHABET = "alphabet";
+    public static final String CHARSET = "charset";
     public static final String SMS_MESSAGE = "message";
     public static final String SMSC_DELIVERY_RECEIPT = "smscDeliveryReceipt";
     public static final String MESSAGE_CLASS = "messageClass";

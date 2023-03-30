@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.esb.connector;
 
+import com.mysql.jdbc.StringUtils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -39,6 +40,7 @@ import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
@@ -120,9 +122,14 @@ public class SendSMS extends AbstractSendSMS {
 
         StringBuilder messageIdList = new StringBuilder();
 
+        byte[] messageBytes = null;
+        if (StringUtils.isNullOrEmpty(dto.getCharset())) {
+            messageBytes = dto.getMessage().getBytes();
+        } else {
+            messageBytes = dto.getMessage().getBytes(dto.getCharset());
+        }
         if (isLongSMS(dto)) {
 
-            byte[] messageBytes = dto.getMessage().getBytes();
             int remainingByteCount = messageBytes.length % SMPP_MAX_CHARACTERS;
 
             int segments = remainingByteCount > 0 ? messageBytes.length / SMPP_MAX_CHARACTERS + 1 :
@@ -176,8 +183,7 @@ public class SendSMS extends AbstractSendSMS {
                 start += size;
             }
         } else {
-            String messageId = submitShortMessage(session, dto, dataCoding, destinationAddress,
-                    dto.getMessage().getBytes());
+            String messageId = submitShortMessage(session, dto, dataCoding, destinationAddress, messageBytes);
             messageIdList.append(messageId);
         }
         return messageIdList.toString();
@@ -202,7 +208,7 @@ public class SendSMS extends AbstractSendSMS {
                 new RegisteredDelivery(SMSCDeliveryReceipt.valueOf(dto.getSmscDeliveryReceipt())),
                 (byte) dto.getReplaceIfPresentFlag(),
                 dataCoding, (byte) dto.getSubmitDefaultMsgId(),
-                message);
+                message).getMessageId();
     }
 
     /**

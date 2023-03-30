@@ -68,6 +68,7 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
                     SMPPConstants.REPLACE_IF_PRESENT_FLAG));
             //Alphabet used in the data encoding of the message
             dto.setAlphabet((String) getParameter(messageContext, SMPPConstants.ALPHABET));
+            dto.setCharset((String) getParameter(messageContext, SMPPConstants.CHARSET));
             dto.setMessageClass((String) getParameter(messageContext, SMPPConstants.MESSAGE_CLASS));
             dto.setCompressed((String) getParameter(messageContext, SMPPConstants.IS_COMPRESSED));
             //indicates short message to send from a predefined list of messages stored on SMSC

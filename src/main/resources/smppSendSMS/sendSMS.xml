@@ -25,7 +25,8 @@
     <parameter name="distinationAddressTon" description="Type of number for destination"/>
     <parameter name="distinationAddressNpi" description="Numbering plan indicator for destination"/>
     <parameter name="distinationAddress" description="Destination address of the short message"/>
-    <parameter name="alphabet" description="Used to defines the encoding scheme of the SMS message"/>
+    <parameter name="alphabet" description="Used to define the encoding scheme of the SMS message"/>
+    <parameter name="charset" description="Used to define the character encoding of the SMS message"/>
     <parameter name="message" description="Message to be sent"/>
     <parameter name="smscDeliveryReceipt" description="Indicator to signify if an SMSC delivery receipt or acknowledgment is required"/>
     <parameter name="scheduleDeliveryTime" description="Scheduled time at which the message delivery should be first attempted"/>

@@ -44,6 +44,7 @@ public class SMSDTO {
     private String validityPeriod;
     private String sourceAddress;
     private String scheduleDeliveryTime;
+    private String charset;
 
     public String getDistinationAddressTon() {
         return distinationAddressTon;
@@ -254,5 +255,13 @@ public class SMSDTO {
             Date date = new SimpleDateFormat(SMPPConstants.TIME_FORMAT).parse(scheduleDeliveryTime);
             this.scheduleDeliveryTime = timeFormatter.format(date);
         }
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
     }
 }

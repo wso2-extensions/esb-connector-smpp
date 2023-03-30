@@ -131,7 +131,7 @@ public class SendSMSTest {
         when(session.submitShortMessage(anyString(), any(TypeOfNumber.class), any(NumberingPlanIndicator.class),
                 anyString(), any(TypeOfNumber.class), any(NumberingPlanIndicator.class), anyString(), any(ESMClass.class),
                 anyByte(), anyByte(), anyString(), anyString(), any(RegisteredDelivery.class), anyByte(),
-                any(DataCoding.class), anyByte(), any(byte[].class))).thenReturn("smsc 1000");
+                any(DataCoding.class), anyByte(), any(byte[].class)).getMessageId()).thenReturn("smsc 1000");
 
         smsConfig.connect(ctx);
         sendSMS.connect(ctx);

@@ -21,6 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mysql.jdbc.StringUtils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -38,11 +39,11 @@ import org.jsmpp.bean.NumberingPlanIndicator;
 import org.jsmpp.bean.RegisteredDelivery;
 import org.jsmpp.bean.ReplaceIfPresentFlag;
 import org.jsmpp.bean.SMSCDeliveryReceipt;
-import org.jsmpp.bean.SubmitMultiResult;
 import org.jsmpp.bean.TypeOfNumber;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
+import org.jsmpp.session.SubmitMultiResult;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 
@@ -73,12 +74,16 @@ public class SendBulkSMS extends AbstractSendSMS {
                     MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
             //Destination addresses payload
             Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
-
+            byte[] messageBytes = null;
+            if (StringUtils.isNullOrEmpty(dto.getCharset())) {
+                messageBytes = dto.getMessage().getBytes();
+            } else {
+                messageBytes = dto.getMessage().getBytes(dto.getCharset());
+            }
             if (isLongSMS(dto)) {
 
                 List<SubmitMultiResult> multiResultList = new ArrayList<>();
 
-                byte[] messageBytes = dto.getMessage().getBytes();
                 int remainingByteCount = messageBytes.length % SMPP_MAX_CHARACTERS;
 
                 int segments = remainingByteCount > 0 ? messageBytes.length / SMPP_MAX_CHARACTERS + 1 :
@@ -119,7 +124,7 @@ public class SendBulkSMS extends AbstractSendSMS {
                     }
 
                     SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
-                            msgSegment);
+                                                                           msgSegment);
 
                     if (log.isDebugEnabled()) {
                         log.info("MessageId of segment " + segmentID + " : " + multiResult.getMessageId());
@@ -130,7 +135,7 @@ public class SendBulkSMS extends AbstractSendSMS {
                 generateBulkResultForLongSMS(messageContext, multiResultList);
             } else {
                 SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
-                        dto.getMessage().getBytes());
+                                                                       messageBytes);
                 generateBulkResult(messageContext, multiResult);
             }
         } catch (ConfigurationException e) {
