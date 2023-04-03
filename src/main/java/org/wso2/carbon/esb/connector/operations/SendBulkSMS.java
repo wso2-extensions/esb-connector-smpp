@@ -56,7 +56,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import static org.wso2.carbon.esb.connector.utils.SMPPConstants.SMPP_MAX_CHARACTERS;
 import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_HEADER_LENGTH;
 import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_IDENTIFIER_SAR;
 import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_SAR_LENGTH;
@@ -81,15 +80,17 @@ public class SendBulkSMS extends AbstractSendSMS {
             byte[] messageBytes = dto.getMessage().getBytes(dto.getCharset());
             if (isLongSMS(dto)) {
 
+                int maxMultipartMessageSegmentSize = SMPPUtils.getSMPPMaxCharacterLength(dto.getAlphabet());
                 List<SubmitMultiResult> multiResultList = new ArrayList<>();
 
-                int remainingByteCount = messageBytes.length % SMPP_MAX_CHARACTERS;
+                int remainingByteCount = messageBytes.length % maxMultipartMessageSegmentSize;
 
-                int segments = remainingByteCount > 0 ? messageBytes.length / SMPP_MAX_CHARACTERS + 1 :
-                        messageBytes.length / SMPP_MAX_CHARACTERS;
+                int segments = remainingByteCount > 0 ?
+                        messageBytes.length / maxMultipartMessageSegmentSize + 1 :
+                        messageBytes.length / maxMultipartMessageSegmentSize;
 
                 int start = 0;
-                int size = SMPP_MAX_CHARACTERS;
+                int size = maxMultipartMessageSegmentSize;
 
                 // generate new reference number
                 byte[] referenceNumber = new byte[1];

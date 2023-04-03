@@ -65,6 +65,7 @@ public class SMPPConstants {
     public static final String UNKNOWN = "UNKNOWN";
     public static final String DEFAULT = "DEFAULT";
     public static final String ALPHA_DEFAULT = "ALPHA_DEFAULT";
+    public static final String ALPHA_USC2 = "ALPHA_UCS2";
     public static final String CLASS1 = "CLASS1";
     public static final String NAMESPACE = "ns";
     public static final String SMPPCON = "http://org.wso2.esbconnectors.smppConnector";
@@ -85,7 +86,8 @@ public class SMPPConstants {
     public static final int MAX_RETRY_COUNT = 3;
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 
-    public static final int SMPP_MAX_CHARACTERS = 153;
+    public static final int MAX_MULTIPART_MSG_SEGMENT_SIZE_DEFAULT = 153;
+    public static final int MAX_MULTIPART_MSG_SEGMENT_SIZE_USC2 = 133;
 
     // Length of the rest of the UDH
     public static final byte UDHIE_HEADER_LENGTH = 0x05;

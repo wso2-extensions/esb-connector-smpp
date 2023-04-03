@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.esb.connector.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
 
@@ -37,5 +38,19 @@ public class SMPPUtils {
             throw new ConfigurationException("The session name property is not set.");
         }
         return connectionName;
+    }
+
+    /**
+     * Returns the maximum number of characters allowed in a SMPP message for the specified alphabet.
+     *
+     * @param alphabet the alphabet of the message
+     * @return the maximum number of characters allowed in a message for the specified alphabet.
+     */
+    public static int getSMPPMaxCharacterLength(String alphabet) {
+        if (SMPPConstants.ALPHA_USC2.equals(alphabet)) {
+            return SMPPConstants.MAX_MULTIPART_MSG_SEGMENT_SIZE_USC2;
+        } else {
+            return SMPPConstants.MAX_MULTIPART_MSG_SEGMENT_SIZE_DEFAULT;
+        }
     }
 }

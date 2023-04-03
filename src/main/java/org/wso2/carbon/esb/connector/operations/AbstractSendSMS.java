@@ -25,12 +25,11 @@ import org.wso2.carbon.connector.core.Connector;
 import org.wso2.carbon.esb.connector.dto.SMSDTO;
 import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
 import org.wso2.carbon.esb.connector.utils.SMPPConstants;
+import org.wso2.carbon.esb.connector.utils.SMPPUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Iterator;
-
-import static org.wso2.carbon.esb.connector.utils.SMPPConstants.SMPP_MAX_CHARACTERS;
 
 /**
  * Parent for SMS Send Operations
@@ -122,6 +121,7 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
      */
     protected boolean isLongSMS(SMSDTO dto) throws UnsupportedEncodingException {
 
-        return dto.getMessage().getBytes(dto.getCharset()).length > SMPP_MAX_CHARACTERS;
+        return dto.getMessage().getBytes(dto.getCharset()).length >
+                SMPPUtils.getSMPPMaxCharacterLength(dto.getAlphabet());
     }
 }
