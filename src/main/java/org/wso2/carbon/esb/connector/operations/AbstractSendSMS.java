@@ -120,8 +120,8 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
      * @param dto The SMS DTO containing all the message related data
      * @return true if the message length is greater than maximum SMPP character limit
      */
-    protected boolean isLongSMS(SMSDTO dto) {
+    protected boolean isLongSMS(SMSDTO dto) throws UnsupportedEncodingException {
 
-        return dto.getMessage().getBytes().length > SMPP_MAX_CHARACTERS;
+        return dto.getMessage().getBytes(dto.getCharset()).length > SMPP_MAX_CHARACTERS;
     }
 }
