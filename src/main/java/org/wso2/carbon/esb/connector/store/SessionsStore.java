@@ -27,7 +27,7 @@ public class SessionsStore {
     private static final ConcurrentHashMap<String, SMPPSession> sessionsMap = new ConcurrentHashMap<>();
 
     /**
-     * Adds an SMPP session to the sessions map with the specified name.
+     * Adds a SMPP session to the sessions map with the specified name.
      *
      * @param sessionsName Name to be assigned to the SMPP session
      * @param session      SMPPSession to be added
@@ -42,7 +42,7 @@ public class SessionsStore {
     }
 
     /**
-     * Removes an SMPP session with the specified name from the sessions map.
+     * Removes a SMPP session with the specified name from the sessions map.
      *
      * @param sessionName the name of the SMPP session to be removed
      * @return true if the SMPP session was removed successfully, false if the session name does not exist in the map
@@ -56,7 +56,7 @@ public class SessionsStore {
     }
 
     /**
-     * Returns an SMPP session with the specified name from the sessions map.
+     * Returns a SMPP session with the specified name from the sessions map.
      *
      * @param sessionName the name of the SMPP session to be retrieved
      */
