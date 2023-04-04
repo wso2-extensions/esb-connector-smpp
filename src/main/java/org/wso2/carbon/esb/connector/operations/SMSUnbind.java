@@ -37,7 +37,11 @@ public class SMSUnbind extends AbstractConnector implements Connector {
     public void connect(MessageContext messageContext) throws ConnectException {
         String sessionName = SMPPUtils.getSessionName(messageContext);
         SessionManager.getInstance().unbind(sessionName);
-        SessionsStore.removeSMPPSession(sessionName);
-        log.info("SMSC Connection unbind is completed.");
+        if (!SessionsStore.removeSMPPSession(sessionName)) {
+            log.info("Failed to unbind. No connection with session name: " + sessionName + " exists in the Sessions "
+                             + "store");
+            return;
+        }
+        log.info("SMSC Connection unbind is completed");
     }
 }
