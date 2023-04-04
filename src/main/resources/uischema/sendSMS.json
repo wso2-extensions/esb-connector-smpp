@@ -109,7 +109,7 @@
                   "type": "attribute",
                   "value": {
                     "name": "alphabet",
-                    "displayName": "SMS Message Encoding Scheme",
+                    "displayName": "Alphabet",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "false",
@@ -120,7 +120,7 @@
                   "type": "attribute",
                   "value": {
                     "name": "charset",
-                    "displayName": "SMS Message Character Encoding",
+                    "displayName": "Charset",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "false",
