@@ -18,7 +18,9 @@
 -->
 
 <template name="unbind" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="name" description="SMSC Connection to be used"/>
     <sequence>
+        <property name="name" expression="$func:name"/>
         <class name="org.wso2.carbon.esb.connector.operations.SMSUnbind"/>
     </sequence>
 </template>
