@@ -75,11 +75,14 @@ public class SMSDTO {
 
     public void setEsmclass(String esmClass) {
         if (StringUtils.isEmpty(esmClass)) {
-            //set it to default value
-            esmclass = 0;
+            esmclass = SMPPConstants.ESM_CLASS_NOT_SET;
         } else {
             esmclass = Integer.parseInt(esmClass);
         }
+    }
+
+    public void setEsmclass(int esmClass) {
+        this.esmclass = esmClass;
     }
 
     public int getProtocolid() {

@@ -95,4 +95,7 @@ public class SMPPConstants {
     public static final byte UDHIE_IDENTIFIER_SAR = 0x00;
     // Length of the sub header(the rest of the UDH)
     public static final byte UDHIE_SAR_LENGTH = 0x03;
+    public static final int ESM_CLASS_DEFAULT = 0;
+    public static final int ESM_CLASS_HIDE_UDH = 64;
+    public static final int ESM_CLASS_NOT_SET = -1;
 }

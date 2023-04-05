@@ -168,7 +168,9 @@ public class SendSMS extends AbstractSendSMS {
                 if (log.isDebugEnabled()) {
                     log.info("Message Size of segment " + segmentID + " : " + msgSegment.length);
                 }
-
+                if(dto.getEsmclass() == SMPPConstants.ESM_CLASS_NOT_SET) {
+                    dto.setEsmclass(SMPPConstants.ESM_CLASS_HIDE_UDH);
+                }
                 String messageId =
                         submitShortMessage(session, dto, dataCoding, destinationAddress, msgSegment);
 
@@ -183,6 +185,9 @@ public class SendSMS extends AbstractSendSMS {
                 start += size;
             }
         } else {
+            if(dto.getEsmclass() == SMPPConstants.ESM_CLASS_NOT_SET) {
+                dto.setEsmclass(SMPPConstants.ESM_CLASS_DEFAULT);
+            }
             String messageId = submitShortMessage(session, dto, dataCoding, destinationAddress, messageBytes);
             messageIdList.append(messageId);
         }
