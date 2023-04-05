@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.esb.connector.utils;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
 

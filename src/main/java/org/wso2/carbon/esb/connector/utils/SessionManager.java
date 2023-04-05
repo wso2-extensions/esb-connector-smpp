@@ -49,7 +49,8 @@ public class SessionManager {
      * @throws IOException
      */
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
-                                      BindParameter bindParameter, int retryCount, String sessionName) throws IOException {
+                                      BindParameter bindParameter, int retryCount, String sessionName)
+            throws IOException {
         SMPPSession session = SessionsStore.getSMPPSession(sessionName);
         // If the session is not available or not bound, create a new session and bind in a synchronized manner.
         if (session == null) {
@@ -75,7 +76,8 @@ public class SessionManager {
                         "Session ID: " + session.getSessionId() + ", Session state: " + session.getSessionState());
             }
             unbind(sessionName);
-            return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount - 1, sessionName);
+            return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount - 1,
+                                  sessionName);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("Returning the session, " + "Session ID:  " +

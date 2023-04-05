@@ -104,15 +104,17 @@ public class SMSConfig extends AbstractConnector implements Connector {
         }
 
         try {
-                session = SessionManager.getInstance().getSmppSession(enquireLinkTimer, transactionTimer,
-                        host, port, new BindParameter(BindType.BIND_TX,
-                                systemId, password, systemType,
-                                TypeOfNumber.valueOf(addressTON),
-                                NumberingPlanIndicator.valueOf(addressNPI), null), SMPPConstants.MAX_RETRY_COUNT, sessionName);
-                SessionsStore.addSMPPSession(sessionName, session);
-                if (log.isDebugEnabled()) {
-                    log.debug("Connected and bind to " + host);
-                }
+            session = SessionManager.getInstance().getSmppSession(enquireLinkTimer, transactionTimer, host, port,
+                                                                  new BindParameter(BindType.BIND_TX, systemId,
+                                                                                    password, systemType,
+                                                                                    TypeOfNumber.valueOf(addressTON),
+                                                                                    NumberingPlanIndicator.valueOf(
+                                                                                            addressNPI), null),
+                                                                  SMPPConstants.MAX_RETRY_COUNT, sessionName);
+            SessionsStore.addSMPPSession(sessionName, session);
+            if (log.isDebugEnabled()) {
+                log.debug("Connected and bind to " + host);
+            }
         } catch (IOException e) {
             handleException("Error while configuring: " + e.getMessage(), e, messageContext);
         }
