@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.SMPP</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.8</version>
+    <version>1.1.0</version>
     <name>WSO2 Carbon - Mediation Library Connector For SMPP</name>
     <url>http://wso2.org</url>
     <properties>
