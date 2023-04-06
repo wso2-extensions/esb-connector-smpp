@@ -15,21 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.operations;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.synapse.MessageContext;
-import org.jsmpp.session.SMPPSession;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.Connector;
-import org.wso2.carbon.esb.connector.exception.ConfigurationException;
+import org.wso2.carbon.esb.connector.dto.SMSDTO;
+import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
+import org.wso2.carbon.esb.connector.utils.SMPPUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Iterator;
-
-import static org.wso2.carbon.esb.connector.SMPPConstants.SMPP_MAX_CHARACTERS;
 
 /**
  * Parent for SMS Send Operations
@@ -68,6 +68,7 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
                     SMPPConstants.REPLACE_IF_PRESENT_FLAG));
             //Alphabet used in the data encoding of the message
             dto.setAlphabet((String) getParameter(messageContext, SMPPConstants.ALPHABET));
+            dto.setCharset((String) getParameter(messageContext, SMPPConstants.CHARSET));
             dto.setMessageClass((String) getParameter(messageContext, SMPPConstants.MESSAGE_CLASS));
             dto.setCompressed((String) getParameter(messageContext, SMPPConstants.IS_COMPRESSED));
             //indicates short message to send from a predefined list of messages stored on SMSC
@@ -101,25 +102,6 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
     }
 
     /**
-     * Returns the SMPP session from the message context.
-     *
-     * @param messageContext synapse message context
-     * @return SMPP session
-     * @throws ConnectException if the session does not exist
-     */
-    protected SMPPSession getSession(MessageContext messageContext) throws ConnectException {
-
-        SMPPSession session = (SMPPSession) messageContext.getProperty(SMPPConstants.SMPP_SESSION);
-        if (session == null) {
-            String msg = "No Active SMPP Connection found to perform the action. Please trigger SMPP.INIT Prior to " +
-                    "SendSMS";
-            log.error(msg);
-            throw new ConnectException(msg);
-        }
-        return session;
-    }
-
-    /**
      * Handles SMPP errors.
      *
      * @param msg Error message
@@ -137,8 +119,9 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
      * @param dto The SMS DTO containing all the message related data
      * @return true if the message length is greater than maximum SMPP character limit
      */
-    protected boolean isLongSMS(SMSDTO dto) {
+    protected boolean isLongSMS(SMSDTO dto) throws UnsupportedEncodingException {
 
-        return dto.getMessage().getBytes().length > SMPP_MAX_CHARACTERS;
+        return dto.getMessage().getBytes(dto.getCharset()).length >
+                SMPPUtils.getSMPPMaxCharacterLength(dto.getAlphabet());
     }
 }

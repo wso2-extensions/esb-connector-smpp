@@ -18,6 +18,7 @@
 -->
 
 <template name="init" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="name" description="Unique name of the SMPP session"/>
     <parameter name="host" description="IP address of the SMSC"/>
     <parameter name="port" description="Port to access the SMSC"/>
     <parameter name="systemId" description="Identifies the user requesting to bind (username)"/>
@@ -29,6 +30,7 @@
     <parameter name="addressTon" description="Identifies user type of number"/>
     <parameter name="addressNpi" description="Numbering plan indicator for user"/>
     <sequence>
+        <property name="name" expression="$func:name"/>
         <property name="host" expression="$func:host"/>
         <property name="port" expression="$func:port"/>
         <property name="systemId" expression="$func:systemId"/>
@@ -38,6 +40,6 @@
         <property name="systemType" expression="$func:systemType"/>
         <property name="addressTon" expression="$func:addressTon"/>
         <property name="addressNpi" expression="$func:addressNpi"/>
-        <class name="org.wso2.carbon.esb.connector.SMSConfig"/>
+        <class name="org.wso2.carbon.esb.connector.operations.SMSConfig"/>
     </sequence>
 </template>

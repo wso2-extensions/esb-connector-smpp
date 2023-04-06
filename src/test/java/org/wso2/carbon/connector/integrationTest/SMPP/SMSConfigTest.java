@@ -38,8 +38,8 @@ import org.testng.IObjectFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
-import org.wso2.carbon.esb.connector.SMPPConstants;
-import org.wso2.carbon.esb.connector.SMSConfig;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
+import org.wso2.carbon.esb.connector.operations.SMSConfig;
 import org.apache.synapse.mediators.template.TemplateContext;
 
 
@@ -48,11 +48,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 import org.powermock.api.mockito.PowerMockito;
-import org.wso2.carbon.esb.connector.SendSMS;
+import org.wso2.carbon.esb.connector.operations.SendSMS;
 
 import java.util.Stack;
 
-@PrepareForTest({org.wso2.carbon.esb.connector.SMSConfig.class, SendSMS.class})
+@PrepareForTest({ SMSConfig.class, SendSMS.class})
 
 public class SMSConfigTest {
 

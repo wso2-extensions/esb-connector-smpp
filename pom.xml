@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.SMPP</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.7</version>
+    <version>1.1.0</version>
     <name>WSO2 Carbon - Mediation Library Connector For SMPP</name>
     <url>http://wso2.org</url>
     <properties>
@@ -34,7 +34,7 @@
         <automation.framework.version>4.4.3</automation.framework.version>
         <emma.version>2.1.5320</emma.version>
         <synapse.version>2.1.7-wso2v95</synapse.version>
-        <carbon.mediation.version>4.6.123</carbon.mediation.version>
+        <carbon.mediation.version>4.6.151</carbon.mediation.version>
         <json.version>3.0.0.wso2v1</json.version>
         <org.testng.version>6.1.1</org.testng.version>
         <jets3t.version>0.9.4</jets3t.version>
@@ -206,9 +206,9 @@
             <version>${product.ei.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.jsmpp</groupId>
+            <groupId>org.jsmpp</groupId>
             <artifactId>jsmpp</artifactId>
-            <version>2.1.0-RELEASE</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.esb.integration</groupId>

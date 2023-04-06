@@ -1,0 +1,135 @@
+{
+  "connectorName": "SMPP",
+  "connectionName": "init",
+  "title": "SMPP",
+  "help": "SMPP",
+  "elements": [
+    {
+      "type": "attribute",
+      "value": {
+        "name": "connectionName",
+        "displayName": "SMSC Connection Name",
+        "inputType": "string",
+        "defaultValue": "SMSC_CONFIG_1",
+        "required": "true",
+        "helpTip": "Name of the SMSC Connection",
+        "validation": "nameWithoutSpecialCharactors"
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "host",
+                    "displayName": "Host",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Hostname of the SMSC"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "port",
+                    "displayName": "Port",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Port to access the SMSC"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "systemId",
+                    "displayName": "System ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "User requesting to bind (username)"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "password",
+                    "displayName": "Password",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Password to allow access"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "enquireLinkTimer",
+                    "displayName": "Enquire Link Timer",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "SMSC is connected or not"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "transactionTimer",
+                    "displayName": "Transaction Timer",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Time elapsed between SMSC request and the corresponding response"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "systemType",
+                    "displayName": "System Type",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "System type"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "addressTon",
+                    "displayName": "Address Ton",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "User type of number"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "addressNpi",
+                    "displayName": "Address NPI",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Numbering plan indicator for user"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

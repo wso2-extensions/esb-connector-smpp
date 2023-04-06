@@ -21,6 +21,7 @@
         <component name="init">
             <file>init.xml</file>
             <description>Initialize SMSC configuration variables</description>
+            <hidden>true</hidden>
         </component>
     </subComponents>
 </component>

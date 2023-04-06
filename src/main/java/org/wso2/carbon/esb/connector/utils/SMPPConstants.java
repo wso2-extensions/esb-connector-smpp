@@ -15,7 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.utils;
+
+import java.nio.charset.Charset;
 
 /**
  * Contains all constants used in SMPP connector implementation
@@ -31,8 +33,11 @@ public class SMPPConstants {
     public static final String ADDRESS_TON = "addressTon";
     public static final String ADDRESS_NPI = "addressNpi";
     public static final String ENQUIRELINK_TIMER = "enquireLinkTimer";
+    public static final int ENQUIRELINK_TIMER_DEFAULT = 50000;
     public static final String TRANSACTION_TIMER = "transactionTimer";
+    public static final int TRANSACTION_TIMER_DEFAULT = 100;
     public static final String SMPP_SESSION = "smpp_session";
+    public static final String SESSION_NAME = "name";
 
     //SMPP send SMS Constants
     public static final String SERVICE_TYPE = "serviceType";
@@ -40,10 +45,11 @@ public class SMPPConstants {
     public static final String SOURCE_ADDRESS_NPI = "sourceAddressNpi";
     public static final String SOURCE_ADDRESS = "sourceAddress";
     public static final String SCHEDULE_DELIVERY_TIME = "scheduleDeliveryTime";
-    public static final String DISTINATION_ADDRESS_TON = "distinationAddressTon";
-    public static final String DISTINATION_ADDRESS_NPI = "distinationAddressNpi";
-    public static final String DISTINATION_ADDRESS = "distinationAddress";
+    public static final String DESTINATION_ADDRESS_TON = "destinationAddressTon";
+    public static final String DESTINATION_ADDRESS_NPI = "destinationAddressNpi";
     public static final String ALPHABET = "alphabet";
+    public static final String CHARSET = "charset";
+    public static final String CHARSET_DEFAULT = Charset.defaultCharset().displayName();
     public static final String SMS_MESSAGE = "message";
     public static final String SMSC_DELIVERY_RECEIPT = "smscDeliveryReceipt";
     public static final String MESSAGE_CLASS = "messageClass";
@@ -59,6 +65,7 @@ public class SMPPConstants {
     public static final String UNKNOWN = "UNKNOWN";
     public static final String DEFAULT = "DEFAULT";
     public static final String ALPHA_DEFAULT = "ALPHA_DEFAULT";
+    public static final String ALPHA_USC2 = "ALPHA_UCS2";
     public static final String CLASS1 = "CLASS1";
     public static final String NAMESPACE = "ns";
     public static final String SMPPCON = "http://org.wso2.esbconnectors.smppConnector";
@@ -79,7 +86,8 @@ public class SMPPConstants {
     public static final int MAX_RETRY_COUNT = 3;
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 
-    public static final int SMPP_MAX_CHARACTERS = 153;
+    public static final int MAX_MULTIPART_MSG_SEGMENT_SIZE_DEFAULT = 153;
+    public static final int MAX_MULTIPART_MSG_SEGMENT_SIZE_USC2 = 133;
 
     // Length of the rest of the UDH
     public static final byte UDHIE_HEADER_LENGTH = 0x05;

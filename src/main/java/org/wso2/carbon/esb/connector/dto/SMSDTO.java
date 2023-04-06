@@ -15,11 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.dto;
 
 import org.apache.commons.lang.StringUtils;
 import org.jsmpp.util.AbsoluteTimeFormatter;
 import org.jsmpp.util.TimeFormatter;
+import org.wso2.carbon.esb.connector.utils.SMPPConstants;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,8 +30,8 @@ public class SMSDTO {
     private String serviceType;
     private String sourceAddressTon;
     private String sourceAddressNpi;
-    private String distinationAddressTon;
-    private String distinationAddressNpi;
+    private String destinationAddressTon;
+    private String destinationAddressNpi;
     private int esmclass;
     private int protocolid;
     private int priorityflag;
@@ -44,27 +45,28 @@ public class SMSDTO {
     private String validityPeriod;
     private String sourceAddress;
     private String scheduleDeliveryTime;
+    private String charset;
 
-    public String getDistinationAddressTon() {
-        return distinationAddressTon;
+    public String getDestinationAddressTon() {
+        return destinationAddressTon;
     }
 
-    public void setDistinationAddressTon(String distinationAddressTon) {
-        if (StringUtils.isEmpty(distinationAddressTon)) {
-            distinationAddressTon = SMPPConstants.UNKNOWN;
+    public void setDestinationAddressTon(String destinationAddressTon) {
+        if (StringUtils.isEmpty(destinationAddressTon)) {
+            destinationAddressTon = SMPPConstants.UNKNOWN;
         }
-        this.distinationAddressTon = distinationAddressTon;
+        this.destinationAddressTon = destinationAddressTon;
     }
 
-    public String getDistinationAddressNpi() {
-        return distinationAddressNpi;
+    public String getDestinationAddressNpi() {
+        return destinationAddressNpi;
     }
 
-    public void setDistinationAddressNpi(String distinationAddressNpi) {
-        if (StringUtils.isEmpty(distinationAddressNpi)) {
-            distinationAddressNpi = SMPPConstants.UNKNOWN;
+    public void setDestinationAddressNpi(String destinationAddressNpi) {
+        if (StringUtils.isEmpty(destinationAddressNpi)) {
+            destinationAddressNpi = SMPPConstants.UNKNOWN;
         }
-        this.distinationAddressNpi = distinationAddressNpi;
+        this.destinationAddressNpi = destinationAddressNpi;
     }
 
     public int getEsmclass() {
@@ -254,5 +256,13 @@ public class SMSDTO {
             Date date = new SimpleDateFormat(SMPPConstants.TIME_FORMAT).parse(scheduleDeliveryTime);
             this.scheduleDeliveryTime = timeFormatter.format(date);
         }
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = StringUtils.isEmpty(charset) ? SMPPConstants.CHARSET_DEFAULT : charset;
     }
 }
