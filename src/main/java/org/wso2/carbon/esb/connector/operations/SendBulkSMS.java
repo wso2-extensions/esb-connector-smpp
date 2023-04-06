@@ -123,6 +123,9 @@ public class SendBulkSMS extends AbstractSendSMS {
                         log.info("Message Size of segment " + segmentID + " : " + msgSegment.length);
                     }
 
+                    if(dto.getEsmclass() == SMPPConstants.ESM_CLASS_NOT_SET) {
+                        dto.setEsmclass(SMPPConstants.ESM_CLASS_HIDE_UDH);
+                    }
                     SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
                                                                            msgSegment);
 
@@ -134,6 +137,9 @@ public class SendBulkSMS extends AbstractSendSMS {
                 }
                 generateBulkResultForLongSMS(messageContext, multiResultList);
             } else {
+                if(dto.getEsmclass() == SMPPConstants.ESM_CLASS_NOT_SET) {
+                    dto.setEsmclass(SMPPConstants.ESM_CLASS_DEFAULT);
+                }
                 SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
                                                                        messageBytes);
                 generateBulkResult(messageContext, multiResult);
