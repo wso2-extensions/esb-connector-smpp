@@ -58,6 +58,21 @@ public class SMSConfig extends AbstractConnector implements Connector {
         } else {
             enquireLinkTimer = Integer.parseInt(enquirelinktimer);
         }
+        //Used to set Session Binding Timeout
+        String sessionBindingTimeout = (String) getParameter(messageContext,
+                SMPPConstants.SESSION_BIND_TIMEOUT);
+        long sessionBindingTimeoutValue;
+        if (StringUtils.isEmpty(sessionBindingTimeout)) {
+            //set it to default value
+            sessionBindingTimeoutValue = 60000;
+        } else {
+            try {
+                sessionBindingTimeoutValue = Long.parseLong(sessionBindingTimeout);
+            } catch (NumberFormatException e) {
+                // Set to default value in case of an exception
+                sessionBindingTimeoutValue = 60000;
+            }
+        }
         //Time elapsed between smpp request and the corresponding response
         String transactiontimer = (String) getParameter(messageContext,
                 SMPPConstants.TRANSACTION_TIMER);
@@ -94,7 +109,8 @@ public class SMSConfig extends AbstractConnector implements Connector {
                         host, port, new BindParameter(BindType.BIND_TX,
                                 systemId, password, systemType,
                                 TypeOfNumber.valueOf(addressTON),
-                                NumberingPlanIndicator.valueOf(addressNPI), null), SMPPConstants.MAX_RETRY_COUNT);
+                                NumberingPlanIndicator.valueOf(addressNPI), null),
+                        SMPPConstants.MAX_RETRY_COUNT, sessionBindingTimeoutValue);
                 //Set the user session to message context
                 messageContext.setProperty(SMPPConstants.SMPP_SESSION, session);
                 if (log.isDebugEnabled()) {
