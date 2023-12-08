@@ -31,6 +31,7 @@ public class SMPPConstants {
     public static final String ADDRESS_TON = "addressTon";
     public static final String ADDRESS_NPI = "addressNpi";
     public static final String ENQUIRELINK_TIMER = "enquireLinkTimer";
+    public static final String SESSION_BIND_TIMEOUT = "sessionBindTimeout";
     public static final String TRANSACTION_TIMER = "transactionTimer";
     public static final String SMPP_SESSION = "smpp_session";
 

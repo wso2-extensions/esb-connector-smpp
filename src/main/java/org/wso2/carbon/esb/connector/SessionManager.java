@@ -25,6 +25,9 @@ import org.jsmpp.session.SMPPSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * The Session Manager maintains the bind connection with smsc for reuse until a unbind is triggered.
  */
@@ -38,6 +41,8 @@ public class SessionManager {
         smppSessionList = new HashMap();
     }
 
+    // Map for locks for each key
+    private ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
     public static synchronized SessionManager getInstance() {
         if (sessionManager == null)
             sessionManager = new SessionManager();
@@ -48,7 +53,6 @@ public class SessionManager {
         return host + SMPPConstants.CONCT_CHAR + port + SMPPConstants.CONCT_CHAR + systemId;
 
     }
-
     /**
      * @param enquireLinkTimer Enquire Link Timer for bind properties.
      * @param transactionTimer Transaction  Timer for bind properties.
@@ -60,23 +64,46 @@ public class SessionManager {
      */
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
                                       BindParameter bindParameter, int retryCount) throws IOException {
-        SMPPSession smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
+        return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount
+                , 60000);
+    }
+
+    /**
+     * @param enquireLinkTimer Enquire Link Timer for bind properties.
+     * @param transactionTimer Transaction  Timer for bind properties.
+     * @param host host name or ip of the SMSC.
+     * @param port connection port of the SMSC.
+     * @param bindParameter the list of parameter needed for the SMSC connectivuty.
+     * @param retryCount retry count for unbound sessions.
+     * @param sessionBindingTimeout session binding timeout.
+     * @throws IOException
+     */
+    public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
+                                      BindParameter bindParameter, int retryCount,
+                                      long sessionBindingTimeout) throws IOException {
+        String key = getKey(host, port, bindParameter.getSystemId());
+        SMPPSession smppSession = smppSessionList.get(key);
         // If the session is not available or not bound, create a new session and bind in a synchronized manner.
         if (smppSession == null) {
-            synchronized (this) {
-                smppSession = smppSessionList.get(getKey(host, port, bindParameter.getSystemId()));
+            ReentrantLock lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock());
+            lock.lock();
+            try {
+                smppSession = smppSessionList.get(key);
                 if (smppSession == null) {
                     smppSession = new SMPPSession();
                     smppSession.setEnquireLinkTimer(enquireLinkTimer);
                     smppSession.setTransactionTimer(transactionTimer);
-                    smppSession.connectAndBind(host, port, bindParameter);
+                    smppSession.connectAndBind(host, port, bindParameter, sessionBindingTimeout);
                     if (log.isDebugEnabled()) {
                         log.debug("A new session is Connected and bind to host: " + host + ", port: " + port +
                                 ", systemId: " + bindParameter.getSystemId() +
                                 ", Session ID: " + smppSession.getSessionId());
                     }
-                    smppSessionList.putIfAbsent(getKey(host, port, bindParameter.getSystemId()), smppSession);
+                    smppSessionList.putIfAbsent(key, smppSession);
                 }
+
+            } finally {
+                lock.unlock();
             }
         }
         //handle unbound sessions
@@ -86,7 +113,8 @@ public class SessionManager {
                         "Session ID: " + smppSession.getSessionId() + ", Session state: " + smppSession.getSessionState());
             }
             unbind(host, port, bindParameter.getSystemId());
-            return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount - 1);
+            return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter
+                    , retryCount - 1, sessionBindingTimeout);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("Returning the session, " + "Session ID:  " +

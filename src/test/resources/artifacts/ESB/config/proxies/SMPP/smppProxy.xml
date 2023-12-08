@@ -51,6 +51,7 @@
             <property name="submitDefaultMsgId" expression="json-eval($.submitDefaultMsgId)"/>
             <property name="validityPeriod" expression="json-eval($.validityPeriod)"/>
             <property name="enquireLinkTimer" expression="json-eval($.enquireLinkTimer)"/>
+            <parameter name="sessionBindTimeout" expression="json-eval($.sessionBindTimeout)"/>
             <property name="transactionTimer" expression="json-eval($.transactionTimer)"/>
             <SMPP.init>
                 <host>{$ctx:host}</host>
@@ -58,6 +59,7 @@
                 <systemId>{$ctx:systemId}</systemId>
                 <password>{$ctx:password}</password>
                 <enquireLinkTimer>{$ctx:enquireLinkTimer}</enquireLinkTimer>
+                <sessionBindTimeout>{$ctx:sessionBindTimeout}</sessionBindTimeout>
                 <transactionTimer>{$ctx:transactionTimer}</transactionTimer>
                 <systemType>{$ctx:systemType}</systemType>
                 <addressTon>{$ctx:addressTon}</addressTon>
