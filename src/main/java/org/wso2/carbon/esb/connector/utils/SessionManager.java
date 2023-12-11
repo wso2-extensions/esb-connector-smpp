@@ -24,6 +24,8 @@ import org.jsmpp.session.SMPPSession;
 import org.wso2.carbon.esb.connector.store.SessionsStore;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The Session Manager maintains the bind connection with smsc for reuse until a unbind is triggered.
@@ -32,6 +34,9 @@ public class SessionManager {
 
     protected Log log = LogFactory.getLog(this.getClass());
     private static SessionManager sessionManager;
+
+    // Map for locks for each key
+    private ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
 
     public static synchronized SessionManager getInstance() {
         if (sessionManager == null)
@@ -46,27 +51,51 @@ public class SessionManager {
      * @param port connection port of the SMSC.
      * @param bindParameter the list of parameter needed for the SMSC connectivuty.
      * @param retryCount retry count for unbound sessions.
+     * @param sessionName sessionName to identify the sessions.
      * @throws IOException
      */
     public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
                                       BindParameter bindParameter, int retryCount, String sessionName)
             throws IOException {
+        return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount, sessionName,
+                              60000);
+    }
+
+    /**
+     * @param enquireLinkTimer Enquire Link Timer for bind properties.
+     * @param transactionTimer Transaction  Timer for bind properties.
+     * @param host host name or ip of the SMSC.
+     * @param port connection port of the SMSC.
+     * @param bindParameter the list of parameter needed for the SMSC connectivuty.
+     * @param retryCount retry count for unbound sessions.
+     * @param sessionName sessionName to identify the sessions.
+     * @param sessionBindTimeout session bind timeout.
+     * @throws IOException
+     */
+    public SMPPSession getSmppSession(int enquireLinkTimer, int transactionTimer, String host, int port,
+                                      BindParameter bindParameter, int retryCount, String sessionName
+            , long sessionBindTimeout)
+            throws IOException {
         SMPPSession session = SessionsStore.getSMPPSession(sessionName);
         // If the session is not available or not bound, create a new session and bind in a synchronized manner.
         if (session == null) {
-            synchronized (this) {
+            ReentrantLock lock = lockMap.computeIfAbsent(sessionName, k -> new ReentrantLock());
+            lock.lock();
+            try {
                 session = SessionsStore.getSMPPSession(sessionName);
                 if (session == null) {
                     session = new SMPPSession();
                     session.setEnquireLinkTimer(enquireLinkTimer);
                     session.setTransactionTimer(transactionTimer);
-                    session.connectAndBind(host, port, bindParameter);
+                    session.connectAndBind(host, port, bindParameter, sessionBindTimeout);
                     if (log.isDebugEnabled()) {
                         log.debug("A new session is Connected and bind to host: " + host + ", port: " + port +
                                 ", systemId: " + bindParameter.getSystemId() +
                                 ", Session ID: " + session.getSessionId());
                     }
                 }
+            } finally {
+                lock.unlock();
             }
         }
         //handle unbound sessions
@@ -77,7 +106,7 @@ public class SessionManager {
             }
             unbind(sessionName);
             return getSmppSession(enquireLinkTimer, transactionTimer, host, port, bindParameter, retryCount - 1,
-                                  sessionName);
+                                  sessionName, sessionBindTimeout);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("Returning the session, " + "Session ID:  " +
