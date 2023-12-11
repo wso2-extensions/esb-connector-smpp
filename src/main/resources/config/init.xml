@@ -24,6 +24,8 @@
     <parameter name="systemId" description="Identifies the user requesting to bind (username)"/>
     <parameter name="password" description="Password to allow access"/>
     <parameter name="enquireLinkTimer" description="used check whether SMSC is connected or not"/>
+    <parameter name="sessionBindTimeout"
+               description="session binding timeout,max time which waits until session to get bind"/>
     <parameter name="transactionTimer"
                description="Time elapsed between smpp request and the corresponding response"/>
     <parameter name="systemType" description="Identifies the system type "/>
@@ -36,6 +38,7 @@
         <property name="systemId" expression="$func:systemId"/>
         <property name="password" expression="$func:password"/>
         <property name="enquireLinkTimer" expression="$func:enquireLinkTimer"/>
+        <property name="sessionBindTimeout" expression="$func:sessionBindTimeout"/>
         <property name="transactionTimer" expression="$func:transactionTimer"/>
         <property name="systemType" expression="$func:systemType"/>
         <property name="addressTon" expression="$func:addressTon"/>

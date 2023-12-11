@@ -84,6 +84,17 @@
                 {
                   "type": "attribute",
                   "value": {
+                    "name": "sessionBindTimeout",
+                    "displayName": "Session Binding Timeout",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "session binding timeout,max time to wait for a response after sending a bind request"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
                     "name": "transactionTimer",
                     "displayName": "Transaction Timer",
                     "inputType": "stringOrExpression",
