@@ -35,6 +35,7 @@ import org.jsmpp.bean.TypeOfNumber;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
+import org.jsmpp.session.SubmitSmResult;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.esb.connector.exception.ConfigurationException;
 
@@ -162,8 +163,10 @@ public class SendSMS extends AbstractSendSMS {
                     log.info("Message Size of segment " + segmentID + " : " + msgSegment.length);
                 }
 
-                String messageId =
-                        submitShortMessage(session, dto, dataCoding, destinationAddress, msgSegment);
+                SubmitSmResult submitSmResult = submitShortMessage(session, dto, dataCoding, destinationAddress,
+                        msgSegment);
+                String messageId = submitSmResult.getMessageId();
+
 
                 if (log.isDebugEnabled()) {
                     log.info("MessageId of segment " + segmentID + " : " + messageId);
@@ -176,15 +179,16 @@ public class SendSMS extends AbstractSendSMS {
                 start += size;
             }
         } else {
-            String messageId = submitShortMessage(session, dto, dataCoding, destinationAddress,
+            SubmitSmResult submitSmResult = submitShortMessage(session, dto, dataCoding, destinationAddress,
                     dto.getMessage().getBytes());
+            String messageId = submitSmResult.getMessageId();
             messageIdList.append(messageId);
         }
         return messageIdList.toString();
     }
 
-    private static String submitShortMessage(SMPPSession session, SMSDTO dto, GeneralDataCoding dataCoding,
-                                             String destinationAddress, byte[] message)
+    private static SubmitSmResult submitShortMessage(SMPPSession session, SMSDTO dto, GeneralDataCoding dataCoding,
+                                                     String destinationAddress, byte[] message)
             throws Exception {
 
         return session.submitShortMessage(
