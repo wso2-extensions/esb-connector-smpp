@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.SMPP</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <name>WSO2 Carbon - Mediation Library Connector For SMPP</name>
     <url>http://wso2.org</url>
     <properties>
@@ -206,9 +206,9 @@
             <version>${product.ei.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.jsmpp</groupId>
+            <groupId>org.jsmpp</groupId>
             <artifactId>jsmpp</artifactId>
-            <version>2.1.0-RELEASE</version>
+            <version>3.0.0-wso2v2</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.esb.integration</groupId>
@@ -245,7 +245,7 @@
                         <id>email-library</id>
                         <phase>compile</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
                             <finalName>${connector.name}-connector-${version}</finalName>
@@ -397,7 +397,7 @@
         <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -407,7 +407,7 @@
         <repository>
             <id>wso2.releases</id>
             <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -417,7 +417,7 @@
         <repository>
             <id>wso2.snapshots</id>
             <name>Apache Snapshot Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -431,12 +431,12 @@
         <repository>
             <id>nexus-releases</id>
             <name>WSO2 Release Distribution Repository</name>
-            <url>http://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
+            <url>https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
             <id>wso2.snapshots</id>
             <name>Apache Snapshot Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
