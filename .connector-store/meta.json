@@ -1,0 +1,23 @@
+{
+    "name": "SMPP",
+    "owner": "WSO2",
+    "category": "Other",
+    "documentationUrl": "https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/smpp-connector/smpp-connector-overview/",
+    "description": "SMPP Connector allows you to send SMS through the WSO2 EI. It uses jsmpp API to communicate with a SMSC (Short Message service center) which is useful for storing, forwarding, converting and delivering Short Message Service (SMS) messages. jsmpp is a java implementation of SMPP. protocol.",
+    "status": "Active",
+    "labels": [
+        "SMS"
+    ],
+    "releases": [
+        {
+            "tagName": "v1.1.2",
+            "products": [
+                "EI 7.0.x",
+                "EI 6.6.0",
+                "EI 6.5.0",
+                "MI 4.2.0"
+            ],
+            "isHidden": false
+        }
+    ]
+}
