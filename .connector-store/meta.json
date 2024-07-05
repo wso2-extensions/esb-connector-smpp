@@ -10,7 +10,7 @@
     ],
     "releases": [
         {
-            "tagName": "v1.1.2",
+            "tagName": "org.wso2.carbon.esb.connector.SMPP-1.1.2",
             "products": [
                 "EI 7.0.x",
                 "EI 6.6.0",
