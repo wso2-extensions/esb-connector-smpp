@@ -15,7 +15,7 @@
                 "EI 7.0.x",
                 "EI 6.6.0",
                 "EI 6.5.0",
-                "MI 4.2.0"
+                "MI 4.x.x"
             ],
             "isHidden": false
         }
