@@ -12,9 +12,6 @@
         {
             "tagName": "org.wso2.carbon.esb.connector.SMPP-1.1.3",
             "products": [
-                "EI 7.0.x",
-                "EI 6.6.0",
-                "EI 6.5.0",
                 "MI 4.x.x"
             ],
             "isHidden": false
