@@ -10,7 +10,6 @@ jobs:
 
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v2.3.3
         with:
           token: ${{ secrets.WSO2_INTEGRATION_BOT_TOKEN }}
@@ -20,6 +19,11 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 11
+      - name: Extract project version
+        run: |
+          VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml | sed 's/-SNAPSHOT$//')
+          VERSION_TAG="v$VERSION"
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
       - name: Configure Maven settings file
         run: |
           mkdir -p ~/.m2
@@ -36,8 +40,21 @@ jobs:
         run: |
           git config --global user.name ${{ secrets.WSO2_INTEGRATION_BOT_USERNAME }}
           git config --global user.email ${{ secrets.WSO2_INTEGRATION_BOT_EMAIL }}
+      - name: Build artifacts
+        run: |
+          mvn clean install
       - name: Deploy artifacts with Maven
         env:
           GITHUB_TOKEN: ${{ secrets.WSO2_INTEGRATION_BOT_TOKEN }}
         run: |
-          mvn --batch-mode release:prepare release:perform
+          mvn --batch-mode release:prepare release:perform -Dtag=${{ env.VERSION_TAG }}
+      - name: Create Github Release with Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.WSO2_INTEGRATION_BOT_TOKEN }}
+        run: |
+          find target/ -type f -name '*-SNAPSHOT.zip' -exec rm -f {} \;
+          gh release create "${{ env.VERSION_TAG }}" \
+            --repo="$GITHUB_REPOSITORY" \
+            --title="${{ env.VERSION_TAG }}" \
+            --generate-notes \
+            target/*.zip
