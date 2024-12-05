@@ -4,8 +4,8 @@
     "product": "MI",
     "category": "Developer Tools",
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/smpp-connector/smpp-connector-overview/",
-    "mavenGroupId": "org.wso2.carbon.connector",
-    "mavenArtifactId": "org.wso2.carbon.connector.SMPP",
+    "mavenGroupId": "org.wso2.integration.connector",
+    "mavenArtifactId": "mi-connector-smpp",
     "description": "SMPP Connector allows you to send SMS through the WSO2 EI. It uses jsmpp API to communicate with a SMSC (Short Message service center) which is useful for storing, forwarding, converting and delivering Short Message Service (SMS) messages. jsmpp is a java implementation of SMPP. protocol.",
     "status": "Active",
     "rank": 19,
@@ -16,7 +16,7 @@
     ],
     "releases": [
         {
-            "tagName": "v1.1.3",
+            "tagName": "org.wso2.carbon.esb.connector.SMPP-1.1.3",
             "products": [
                 "MI 4.3.0",
                 "MI 4.2.0",
