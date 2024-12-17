@@ -16,6 +16,44 @@
     ],
     "releases": [
         {
+            "tagName": "v1.1.4",
+            "products": [
+                "MI 4.3.0",
+                "MI 4.2.0",
+                "MI 4.1.0",
+                "MI 4.0.0"
+            ],
+            "operations": [
+                {
+                    "name": "init",
+                    "description": "Initialize SMSC configuration variables",
+                    "isHidden": true
+                },
+                {
+                    "name": "sendSMS",
+                    "description": "Send SMS message",
+                    "isHidden": false
+                },
+                {
+                    "name": "sendBulkSMS",
+                    "description": "Send Bulk SMS messages",
+                    "isHidden": false
+                },
+                {
+                    "name": "unbind",
+                    "description": "Unbind the SMSC connection",
+                    "isHidden": false
+                }
+            ],
+            "connections": [
+                {
+                    "name": "smpp",
+                    "description": "Connection for exchanging messages via SMPP protocol."
+                }
+            ],
+            "isHidden": false
+        },
+        {
             "tagName": "org.wso2.carbon.esb.connector.SMPP-1.1.3",
             "products": [
                 "MI 4.3.0",

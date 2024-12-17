@@ -23,5 +23,6 @@
         <dependency component="operations" />
         <description>WSO2 SMPP connector</description>
     </component>
+    <displayName>SMPP</displayName>
     <icon>icon/icon-small.gif</icon>
 </connector>
