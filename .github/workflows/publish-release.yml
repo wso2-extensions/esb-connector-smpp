@@ -57,7 +57,7 @@ jobs:
           ls -l ~/.m2/repository/org/wso2/wso2-jsmpp/3.0.0-wso2v3/
       - name: Build artifacts
         run: |
-          mvn clean install
+          mvn clean install -Dmaven.repo.local=~/.m2/repository --settings ~/.m2/settings.xml
       - name: Deploy artifacts with Maven
         env:
           GITHUB_TOKEN: ${{ secrets.WSO2_INTEGRATION_BOT_TOKEN }}
