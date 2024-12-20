@@ -42,7 +42,7 @@ jobs:
           git config --global user.email ${{ secrets.WSO2_INTEGRATION_BOT_EMAIL }}
       - name: Download wso2-jsmpp JAR
         run: |
-          curl -L -o wso2-jsmpp-3.0.0-wso2v3.jar https://github.com/wso2/wso2-jsmpp/releases/download/3.0.0-wso2v3/wso2-jsmpp-3.0.0-wso2v3.jar
+          curl -L -o wso2-jsmpp-3.0.0-wso2v3.jar https://github.com/wso2/wso2-jsmpp/releases/download/3.0.0-wso2v3/jsmpp-3.0.0-wso2v3.jar
   
       - name: Install wso2-jsmpp to Maven Local
         run: |
