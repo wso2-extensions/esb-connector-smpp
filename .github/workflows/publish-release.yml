@@ -43,16 +43,7 @@ jobs:
       - name: Download wso2-jsmpp JAR
         run: |
           curl -L -o wso2-jsmpp-3.0.0-wso2v3.jar https://github.com/wso2/wso2-jsmpp/releases/download/3.0.0-wso2v3/jsmpp-3.0.0-wso2v3.jar
-  
       - name: Install wso2-jsmpp to Maven Local
-        run: |
-          mvn install:install-file \
-            -Dfile=wso2-jsmpp-3.0.0-wso2v3.jar \
-            -DgroupId=org.wso2 \
-            -DartifactId=wso2-jsmpp \
-            -Dversion=3.0.0-wso2v3 \
-            -Dpackaging=jar
-      - name: Install wso2-jsmpp to Maven Local New
         run: |
           mvn install:install-file \
             -Dfile=wso2-jsmpp-3.0.0-wso2v3.jar \
@@ -60,13 +51,6 @@ jobs:
             -DartifactId=jsmpp \
             -Dversion=3.0.0-wso2v3 \
             -Dpackaging=jar
-      - name: Verify local Maven repository
-        run: |
-          ls -l ~/.m2/repository/org/wso2/wso2-jsmpp/3.0.0-wso2v3/
-      - name: Copy wso2-jsmpp to jsmpp
-        run: |
-          mkdir -p ~/.m2/repository/org/jsmpp/jsmpp/3.0.0-wso2v3/
-          cp -r ~/.m2/repository/org/wso2/wso2-jsmpp/3.0.0-wso2v3/* ~/.m2/repository/org/jsmpp/jsmpp/3.0.0-wso2v3/
       - name: Build artifacts
         run: |
           mvn clean install
