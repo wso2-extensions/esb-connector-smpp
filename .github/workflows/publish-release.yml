@@ -52,6 +52,14 @@ jobs:
             -DartifactId=wso2-jsmpp \
             -Dversion=3.0.0-wso2v3 \
             -Dpackaging=jar
+      - name: Install wso2-jsmpp to Maven Local New
+        run: |
+          mvn install:install-file \
+            -Dfile=wso2-jsmpp-3.0.0-wso2v3.jar \
+            -DgroupId=org.jsmpp \
+            -DartifactId=jsmpp \
+            -Dversion=3.0.0-wso2v3 \
+            -Dpackaging=jar
       - name: Verify local Maven repository
         run: |
           ls -l ~/.m2/repository/org/wso2/wso2-jsmpp/3.0.0-wso2v3/
