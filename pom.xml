@@ -21,7 +21,7 @@
     <groupId>org.wso2.integration.connector</groupId>
     <artifactId>mi-connector-smpp</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Mediation Library Connector For SMPP</name>
     <url>http://wso2.org</url>
     <properties>
@@ -31,13 +31,14 @@
         <automation.framework.utils.version>4.4.2</automation.framework.utils.version>
         <automation.framework.version>4.4.3</automation.framework.version>
         <emma.version>2.1.5320</emma.version>
-        <synapse.version>2.1.7-wso2v95</synapse.version>
+        <synapse.version>4.0.0-wso2v215</synapse.version>
         <carbon.mediation.version>4.6.151</carbon.mediation.version>
         <json.version>3.0.0.wso2v1</json.version>
         <org.testng.version>6.1.1</org.testng.version>
         <jets3t.version>0.9.4</jets3t.version>
         <skip-tests>true</skip-tests>
-        <smpp.version>3.0.0-wso2v3</smpp.version>
+        <smpp.version>3.0.0-wso2v4</smpp.version>
+        <connector.core.version>0.9.2</connector.core.version>
     </properties>
     <dependencies>
         <dependency>
@@ -127,9 +128,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.wso2.carbon.mediation</groupId>
-            <artifactId>org.wso2.carbon.connector.core</artifactId>
-            <version>${carbon.mediation.version}</version>
+            <groupId>org.wso2.integration.connector.core</groupId>
+            <artifactId>mi-connector-core</artifactId>
+            <version>${connector.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mediation</groupId>
@@ -205,9 +206,14 @@
             <version>${product.ei.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jsmpp</groupId>
+            <groupId>org.wso2.jsmpp</groupId>
             <artifactId>jsmpp</artifactId>
             <version>${smpp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.esb.integration</groupId>
@@ -246,6 +252,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>email-library</id>
@@ -257,7 +264,7 @@
                             <finalName>${connector.name}-connector-${version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <filters>
-                                <filter>src/main/assembly/filter.properties</filter>
+                                <filter>${basedir}/src/main/assembly/filter.properties</filter>
                             </filters>
                             <descriptors>
                                 <descriptor>src/main/assembly/assemble-connector.xml</descriptor>
@@ -370,6 +377,24 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>copy-mi-connector-core</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.integration.connector.core</groupId>
+                                    <artifactId>mi-connector-core</artifactId>
+                                    <version>${connector.core.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>target/connector/dependencies</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-emma-dependencies</id>
                         <phase>compile</phase>
                         <goals>
@@ -437,12 +462,7 @@
         <repository>
             <id>nexus-releases</id>
             <name>WSO2 Release Distribution Repository</name>
-            <url>https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
         </repository>
-        <snapshotRepository>
-            <id>wso2.snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
     </distributionManagement>
 </project>

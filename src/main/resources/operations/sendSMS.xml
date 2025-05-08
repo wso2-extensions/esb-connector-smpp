@@ -39,6 +39,8 @@
     <parameter name="replaceIfPresentFlag" description=""/>
     <parameter name="submitDefaultMsgId" description=""/>
     <parameter name="validityPeriod" description=""/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property name="serviceType" expression="$func:serviceType"/>
         <property name="sourceAddressTon" expression="$func:sourceAddressTon"/>

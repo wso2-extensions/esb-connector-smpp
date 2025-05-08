@@ -16,19 +16,17 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<component name="operations" type="synapse/template" >
+<component name="operations" type="synapse/template" displayName="Operations">
     <subComponents>
         <component name="sendSMS" >
+            <displayName>Send SMS</displayName>
             <file>sendSMS.xml</file>
             <description>Send SMS message</description>
         </component>
         <component name="sendBulkSMS">
+            <displayName>Send Bulk SMS</displayName>
             <file>sendBulkSMS.xml</file>
             <description>Send Bulk SMS messages</description>
-        </component>
-        <component name="unbind">
-            <file>unbind.xml</file>
-            <description>Unbind the SMSC connection</description>
         </component>
     </subComponents>
 </component>

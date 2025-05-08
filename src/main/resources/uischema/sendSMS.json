@@ -16,7 +16,7 @@
               "displayName": "SMSC Connection Name",
               "inputType": "connection",
               "allowedConnectionTypes": [
-                "init"
+                "SMPP"
               ],
               "defaultValue": "",
               "required": "true",
@@ -27,6 +27,47 @@
             "type": "attributeGroup",
             "value": {
               "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "sourceAddress",
+                    "displayName": "Source Address",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Source address"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "destinationAddress",
+                    "displayName": "Destination Address",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Destination address of the short message"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "message",
+                    "displayName": "Message",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Message to be sent"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Advanced",
               "elements": [
                 {
                   "type": "attribute",
@@ -64,17 +105,6 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "sourceAddress",
-                    "displayName": "Source Address",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "Source address"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
                     "name": "destinationAddressTon",
                     "displayName": "Destination Address Type of Number",
                     "inputType": "stringOrExpression",
@@ -97,17 +127,6 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "destinationAddress",
-                    "displayName": "Destination Address",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "Destination address of the short message"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
                     "name": "alphabet",
                     "displayName": "Alphabet",
                     "inputType": "stringOrExpression",
@@ -125,17 +144,6 @@
                     "defaultValue": "",
                     "required": "false",
                     "helpTip": "Character encoding of the SMS message"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "message",
-                    "displayName": "Message",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "Message to be sent"
                   }
                 },
                 {
@@ -246,6 +254,36 @@
                     "defaultValue": "",
                     "required": "false",
                     "helpTip": "Time period during which an SMS message can be delivered"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Output",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "responseVariable",
+                    "displayName": "Output Variable Name",
+                    "inputType": "string",
+                    "deriveResponseVariable": "true",
+                    "required": "true",
+                    "helpTip": "Name of the variable to which the output of the operation should be assigned"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "overwriteBody",
+                    "displayName": "Overwrite Message Body",
+                    "inputType": "checkbox",
+                    "defaultValue": "false",
+                    "helpTip": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable).",
+                    "required": "false"
                   }
                 }
               ]

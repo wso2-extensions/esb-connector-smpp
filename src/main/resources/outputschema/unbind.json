@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Output Schema for SendSMS Operation",
+  "description": "Output schema for the SendSMS operation in the SMPP connector.",
+  "properties": {
+    "payload": {
+      "type": "object",
+      "description": "Response for a regular SMS message"
+    }
+  },
+  "required": [
+    "payload"
+  ],
+  "additionalProperties": false
+}

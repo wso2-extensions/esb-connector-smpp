@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Output Schema for SendSMS Operation",
+  "description": "Output schema for the SendSMS operation in the SMPP connector.",
+  "properties": {
+    "payload": {
+      "type": "object",
+      "description": "Response for a regular SMS message",
+      "properties": {
+        "messageId": {
+          "type": "string",
+          "description": "The identifier of the submitted message returned by the SMSC."
+        },
+        "unsuccessfulDeliveries": {
+          "type": "array",
+          "description": "List of destinations where message delivery was unsuccessful.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "destinationAddress": {
+                "type": "string",
+                "description": "The phone number or address where the delivery was unsuccessful."
+              },
+              "errorStatusCode": {
+                "type": "string",
+                "description": "The error code indicating why the delivery was unsuccessful."
+              }
+            },
+            "required": [
+              "destinationAddress",
+              "errorStatusCode"
+            ]
+          }
+        }
+      },
+      "required": [
+        "messageId"
+      ]
+    }
+  },
+  "required": [
+    "payload"
+  ],
+  "additionalProperties": false
+}

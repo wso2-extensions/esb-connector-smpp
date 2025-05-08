@@ -33,7 +33,15 @@
             <excludes>
                 <exclude>**/metrics_module.xml</exclude>
                 <exclude>**/META-INF/*</exclude>
+                <exclude>**/descriptor.yml</exclude>
             </excludes>
         </fileSet>
     </fileSets>
+    <files>
+        <file>
+            <source>src/main/resources/descriptor.yml</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+    </files>
 </assembly>
