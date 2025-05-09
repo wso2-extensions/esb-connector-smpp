@@ -1,0 +1,11 @@
+# Connector Descriptor File
+# Specifies the dependencies and repositories required for the connector.
+
+dependencies:
+  - groupId: "org.wso2.jsmpp"
+    artifactId: "jsmpp"
+    version: "${smpp.version}"
+
+repositories:
+  - id: "wso2-nexus"
+    url: "https://maven.wso2.org/nexus/content/groups/wso2-public/"
