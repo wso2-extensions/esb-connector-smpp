@@ -10,22 +10,17 @@
         "groupName": "General",
         "elements": [
           {
-            "type": "attributeGroup",
+            "type": "attribute",
             "value": {
-              "groupName": "Basic",
-              "elements": [
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "name",
-                    "displayName": "SMSC Connection Name",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "SMSC Connection to be used"
-                  }
-                }
-              ]
+              "name": "configRef",
+              "displayName": "SMSC Connection Name",
+              "inputType": "connection",
+              "allowedConnectionTypes": [
+                "SMPP"
+              ],
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "SMSC Connection to be used"
             }
           }
         ]

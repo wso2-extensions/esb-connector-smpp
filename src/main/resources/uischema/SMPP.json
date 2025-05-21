@@ -1,6 +1,6 @@
 {
   "connectorName": "SMPP",
-  "connectionName": "init",
+  "connectionName": "SMPP",
   "title": "SMPP",
   "help": "SMPP",
   "elements": [
@@ -32,7 +32,7 @@
                     "name": "host",
                     "displayName": "Host",
                     "inputType": "stringOrExpression",
-                    "defaultValue": "",
+                    "defaultValue": "localhost",
                     "required": "true",
                     "helpTip": "Hostname of the SMSC"
                   }
@@ -43,7 +43,7 @@
                     "name": "port",
                     "displayName": "Port",
                     "inputType": "stringOrExpression",
-                    "defaultValue": "",
+                    "defaultValue": "2775",
                     "required": "true",
                     "helpTip": "Port to access the SMSC"
                   }
@@ -69,7 +69,15 @@
                     "required": "true",
                     "helpTip": "Password to allow access"
                   }
-                },
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Advanced",
+              "elements": [
                 {
                   "type": "attribute",
                   "value": {

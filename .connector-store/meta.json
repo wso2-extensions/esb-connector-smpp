@@ -16,13 +16,9 @@
     ],
     "releases": [
         {
-            "tagName": "v1.1.4",
+            "tagName": "v2.0.0",
             "products": [
-                "MI 4.4.0",
-                "MI 4.3.0",
-                "MI 4.2.0",
-                "MI 4.1.0",
-                "MI 4.0.0"
+                "MI 4.4.0"
             ],
             "operations": [
                 {
@@ -48,15 +44,16 @@
             ],
             "connections": [
                 {
-                    "name": "smpp",
+                    "name": "SMPP",
                     "description": "Connection for exchanging messages via SMPP protocol."
                 }
             ],
             "isHidden": false
         },
         {
-            "tagName": "org.wso2.carbon.esb.connector.SMPP-1.1.3",
+            "tagName": "v1.1.4",
             "products": [
+                "MI 4.4.0",
                 "MI 4.3.0",
                 "MI 4.2.0",
                 "MI 4.1.0",

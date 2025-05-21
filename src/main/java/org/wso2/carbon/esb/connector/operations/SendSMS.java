@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.esb.connector.operations;
 
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
+import com.google.gson.JsonObject;
 import org.apache.synapse.MessageContext;
 import org.jsmpp.InvalidResponseException;
 import org.jsmpp.PDUException;
@@ -35,12 +32,12 @@ import org.jsmpp.bean.TypeOfNumber;
 import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
-import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.esb.connector.utils.SMPPConstants;
 import org.wso2.carbon.esb.connector.utils.SMPPUtils;
 import org.wso2.carbon.esb.connector.dto.SMSDTO;
 import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
 import org.wso2.carbon.esb.connector.store.SessionsStore;
+import org.wso2.integration.connector.core.ConnectException;
 
 import java.io.IOException;
 import java.util.Random;
@@ -59,7 +56,8 @@ public class SendSMS extends AbstractSendSMS {
      * @throws ConnectException
      */
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
+    public void execute(MessageContext messageContext, String responseVariable, Boolean overwriteBody)
+            throws ConnectException {
 
         if (log.isDebugEnabled()) {
             log.debug("Start Sending SMS");
@@ -84,7 +82,7 @@ public class SendSMS extends AbstractSendSMS {
             //Send the SMS message
             String messageId = submitMessage(session, dto, dataCoding, destinationAddress);
 
-            generateResult(messageContext, messageId);
+            generateResult(messageContext, messageId, responseVariable, overwriteBody);
 
             if (log.isDebugEnabled()) {
                 log.debug("Message submitted, message_id is " + messageId);
@@ -221,13 +219,14 @@ public class SendSMS extends AbstractSendSMS {
      *
      * @param messageContext The message context that is used in generate result mediation flow.
      * @param resultStatus   Boolean value of the result to display.
+     * @param responseVariable The variable name that is used to store the result.
+     * @param overwriteBody Boolean value to overwrite the body or not.
      */
-    private void generateResult(MessageContext messageContext, String resultStatus) {
+    private void generateResult(MessageContext messageContext, String resultStatus, String responseVariable,
+                                Boolean overwriteBody) {
 
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
-        OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
-        messageElement.setText(resultStatus);
-        preparePayload(messageContext, messageElement);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(SMPPConstants.MESSAGE_ID, resultStatus);
+        handleConnectorResponse(messageContext, responseVariable, overwriteBody, jsonObject, null, null);
     }
 }

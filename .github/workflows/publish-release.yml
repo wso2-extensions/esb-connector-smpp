@@ -40,17 +40,6 @@ jobs:
         run: |
           git config --global user.name ${{ secrets.WSO2_INTEGRATION_BOT_USERNAME }}
           git config --global user.email ${{ secrets.WSO2_INTEGRATION_BOT_EMAIL }}
-      - name: Download wso2-jsmpp JAR
-        run: |
-          curl -L -o wso2-jsmpp-3.0.0-wso2v3.jar https://github.com/wso2/wso2-jsmpp/releases/download/3.0.0-wso2v3/jsmpp-3.0.0-wso2v3.jar
-      - name: Install wso2-jsmpp to Maven Local
-        run: |
-          mvn install:install-file \
-            -Dfile=wso2-jsmpp-3.0.0-wso2v3.jar \
-            -DgroupId=org.jsmpp \
-            -DartifactId=jsmpp \
-            -Dversion=3.0.0-wso2v3 \
-            -Dpackaging=jar
       - name: Build artifacts
         run: |
           mvn clean install

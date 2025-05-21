@@ -19,8 +19,8 @@
 
 <connector>
     <component name="SMPP" package="org.wso2.carbon.connector">
-        <dependency component="config" />
         <dependency component="operations" />
+        <dependency component="config" />
         <description>WSO2 SMPP connector</description>
     </component>
     <displayName>SMPP</displayName>

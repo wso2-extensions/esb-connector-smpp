@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Output Schema for SendBulkSMS Operation",
+  "description": "Output schema for the SendBulkSMS operation in the SMPP connector.",
+  "properties": {
+    "payload": {
+      "type": "object",
+      "description": "The main response payload from the SendBulkSMS operation.",
+      "properties": {
+        "isLongSMS": {
+          "type": "boolean",
+          "description": "Indicates whether the message was sent as a long SMS that was split into multiple segments."
+        },
+        "results": {
+          "type": "array",
+          "description": "List of results for all message segments or the single message.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "messageId": {
+                "type": "string",
+                "description": "The identifier of the submitted message segment returned by the SMSC."
+              },
+              "unsuccessfulDeliveries": {
+                "type": "array",
+                "description": "List of destinations where message segment delivery was unsuccessful.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "destinationAddress": {
+                      "type": "string",
+                      "description": "The phone number or address where the delivery was unsuccessful."
+                    },
+                    "errorStatusCode": {
+                      "type": "string",
+                      "description": "The error code indicating why the delivery was unsuccessful."
+                    }
+                  },
+                  "required": [
+                    "destinationAddress",
+                    "errorStatusCode"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "messageId",
+              "unsuccessfulDeliveries"
+            ]
+          }
+        },
+        "segmentCount": {
+          "type": "integer",
+          "description": "The total number of message segments sent."
+        }
+      },
+      "required": [
+        "isLongSMS",
+        "results",
+        "segmentCount"
+      ]
+    }
+  },
+  "required": [
+    "payload"
+  ],
+  "additionalProperties": false
+}

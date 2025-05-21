@@ -18,12 +18,12 @@
 package org.wso2.carbon.esb.connector.operations;
 
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.Connector;
 import org.wso2.carbon.esb.connector.utils.SMPPUtils;
 import org.wso2.carbon.esb.connector.utils.SessionManager;
 import org.wso2.carbon.esb.connector.store.SessionsStore;
+import org.wso2.integration.connector.core.AbstractConnector;
+import org.wso2.integration.connector.core.ConnectException;
+import org.wso2.integration.connector.core.Connector;
 
 /**
  * The SMSUnbind class is to provide the unbind capability as a template

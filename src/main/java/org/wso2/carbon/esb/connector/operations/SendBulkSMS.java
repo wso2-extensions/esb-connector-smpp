@@ -43,12 +43,12 @@ import org.jsmpp.extra.NegativeResponseException;
 import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.SMPPSession;
 import org.jsmpp.session.SubmitMultiResult;
-import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.esb.connector.utils.SMPPConstants;
 import org.wso2.carbon.esb.connector.utils.SMPPUtils;
 import org.wso2.carbon.esb.connector.dto.SMSDTO;
 import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
 import org.wso2.carbon.esb.connector.store.SessionsStore;
+import org.wso2.integration.connector.core.ConnectException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +63,8 @@ import static org.wso2.carbon.esb.connector.utils.SMPPConstants.UDHIE_SAR_LENGTH
 public class SendBulkSMS extends AbstractSendSMS {
 
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
+    public void execute(MessageContext messageContext, String responseVariable, Boolean overwriteBody)
+            throws ConnectException {
 
         if (log.isDebugEnabled()) {
             log.debug("Start Sending Bulk SMS");
@@ -76,7 +77,8 @@ public class SendBulkSMS extends AbstractSendSMS {
             GeneralDataCoding dataCoding = new GeneralDataCoding(Alphabet.valueOf(dto.getAlphabet()),
                     MessageClass.valueOf(dto.getMessageClass()), dto.isCompressed());
             //Destination addresses payload
-            Object addresses = getParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES);
+            Object addresses = getMediatorParameter(messageContext, SMPPConstants.DESTINATION_ADDRESSES,
+                    String.class, false);
             byte[] messageBytes = dto.getMessage().getBytes(dto.getCharset());
             if (isLongSMS(dto)) {
 
@@ -135,14 +137,16 @@ public class SendBulkSMS extends AbstractSendSMS {
                     multiResultList.add(multiResult);
                     start += size;
                 }
-                generateBulkResultForLongSMS(messageContext, multiResultList);
+                generateBulkResult(messageContext, multiResultList, responseVariable, overwriteBody, true);
             } else {
                 if(dto.getEsmclass() == SMPPConstants.ESM_CLASS_NOT_SET) {
                     dto.setEsmclass(SMPPConstants.ESM_CLASS_DEFAULT);
                 }
                 SubmitMultiResult multiResult = submitMultipleMessages(session, dto, dataCoding, addresses,
                                                                        messageBytes);
-                generateBulkResult(messageContext, multiResult);
+                List<SubmitMultiResult> resultList = new ArrayList<>();
+                resultList.add(multiResult);
+                generateBulkResult(messageContext, resultList, responseVariable, overwriteBody, false);
             }
         } catch (ConfigurationException e) {
             handleSMPPError("Invalid configuration " + e.getMessage(), e, messageContext);
@@ -253,69 +257,48 @@ public class SendBulkSMS extends AbstractSendSMS {
     }
 
     /**
-     * Create the response payload using the SubmitMultiResult.
+     * Create a unified response payload for both regular and long SMS messages.
      *
-     * @param messageContext Synapse message context
-     * @param smr            SubmitMultiResult of the bulk message request
+     * @param messageContext    Synapse message context
+     * @param smrList           List of SubmitMultiResult objects (single item for regular SMS)
+     * @param responseVariable  Name of the variable to store the response
+     * @param overwriteBody     Flag to indicate whether to overwrite the message body
+     * @param isLongSMS         Flag to indicate if this is a long SMS with multiple segments
      */
-    private void generateBulkResult(MessageContext messageContext, SubmitMultiResult smr) {
+    private void generateBulkResult(MessageContext messageContext, List<SubmitMultiResult> smrList,
+                                           String responseVariable, Boolean overwriteBody, boolean isLongSMS) {
+        JsonObject jsonObject = new JsonObject();
 
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
-        OMElement root = factory.createOMElement(SMPPConstants.RESULTS, ns);
-        generateBulkResultStatus(factory, root, ns, smr);
-        preparePayload(messageContext, root);
-    }
+        // Add a flag to indicate if the message was sent as a long SMS
+        jsonObject.addProperty("isLongSMS", isLongSMS);
 
-    /**
-     * Create the response payload using the SubmitMultiResult List for Long messages.
-     *
-     * @param messageContext Synapse message context
-     * @param smrList        List of SubmitMultiResult of the bulk long message request
-     */
-    private void generateBulkResultForLongSMS(MessageContext messageContext, List<SubmitMultiResult> smrList) {
-
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace ns = factory.createOMNamespace(SMPPConstants.SMPPCON, SMPPConstants.NAMESPACE);
-        OMElement root = factory.createOMElement(SMPPConstants.RESULTS, ns);
+        // Create a results array for all message segments
+        JsonArray resultsArray = new JsonArray();
 
         for (SubmitMultiResult smr : smrList) {
-            OMElement result = factory.createOMElement(SMPPConstants.RESULT, ns);
-            generateBulkResultStatus(factory, result, ns, smr);
-            root.addChild(result);
+            JsonObject resultObject = new JsonObject();
+            resultObject.addProperty(SMPPConstants.MESSAGE_ID, smr.getMessageId());
+
+            JsonArray unsuccessfulDeliveriesArray = new JsonArray();
+
+            for (int i = 0; i < smr.getUnsuccessDeliveries().length; i++) {
+                JsonObject unsuccessfulDelivery = new JsonObject();
+                unsuccessfulDelivery.addProperty(SMPPConstants.DESTINATION_ADDRESS,
+                        smr.getUnsuccessDeliveries()[i].getDestinationAddress().getAddress());
+                unsuccessfulDelivery.addProperty(SMPPConstants.ERROR_STATUS_CODE,
+                        String.valueOf(smr.getUnsuccessDeliveries()[i]));
+                unsuccessfulDeliveriesArray.add(unsuccessfulDelivery);
+            }
+
+            resultObject.add(SMPPConstants.UNSUCCESSFUL_DELIVERIES, unsuccessfulDeliveriesArray);
+            resultsArray.add(resultObject);
         }
-        preparePayload(messageContext, root);
-    }
 
-    /**
-     * Create the message status payload using the SubmitMultiResult.
-     *
-     * @param factory OMFactory used to generate the OM elements
-     * @param parent  OMElement to which the children are added
-     * @param ns      OMNamespace related to the connector response
-     * @param smr     SubmitMultiResult returned after sending the message
-     */
-    private void generateBulkResultStatus(OMFactory factory, OMElement parent, OMNamespace ns, SubmitMultiResult smr) {
+        jsonObject.add(SMPPConstants.RESULTS, resultsArray);
 
-        OMElement messageElement = factory.createOMElement(SMPPConstants.MESSAGE_ID, ns);
-        messageElement.setText(smr.getMessageId());
+        // Add total segment count
+        jsonObject.addProperty("segmentCount", smrList.size());
 
-        OMElement unsuccessfulDeliveries = factory.createOMElement(SMPPConstants.UNSUCCESSFUL_DELIVERIES, ns);
-
-        for (int i = 1; i < smr.getUnsuccessDeliveries().length; i++) {
-            OMElement destinationAddress = factory.createOMElement(SMPPConstants.DESTINATION_ADDRESS, ns);
-            destinationAddress.setText(smr.getUnsuccessDeliveries()[i].getDestinationAddress().getAddress());
-
-            OMElement errorStatusCode = factory.createOMElement(SMPPConstants.ERROR_STATUS_CODE, ns);
-            errorStatusCode.setText(String.valueOf(smr.getUnsuccessDeliveries()[i]));
-
-            OMElement unsuccessfulDelivery = factory.createOMElement(SMPPConstants.UNSUCCESSFUL_DELIVERY, ns);
-            unsuccessfulDelivery.addChild(destinationAddress);
-            unsuccessfulDelivery.addChild(errorStatusCode);
-
-            unsuccessfulDeliveries.addChild(unsuccessfulDelivery);
-        }
-        parent.addChild(messageElement);
-        parent.addChild(unsuccessfulDeliveries);
+        handleConnectorResponse(messageContext, responseVariable, overwriteBody, jsonObject, null, null);
     }
 }

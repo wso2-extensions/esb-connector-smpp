@@ -17,24 +17,21 @@
  */
 package org.wso2.carbon.esb.connector.operations;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPBody;
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.Connector;
 import org.wso2.carbon.esb.connector.dto.SMSDTO;
 import org.wso2.carbon.esb.connector.exceptions.ConfigurationException;
 import org.wso2.carbon.esb.connector.utils.SMPPConstants;
 import org.wso2.carbon.esb.connector.utils.SMPPUtils;
+import org.wso2.integration.connector.core.AbstractConnectorOperation;
+import org.wso2.integration.connector.core.Connector;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.Iterator;
 
 /**
  * Parent for SMS Send Operations
  */
-public abstract class AbstractSendSMS extends AbstractConnector implements Connector {
+public abstract class AbstractSendSMS extends AbstractConnectorOperation implements Connector {
 
     /**
      * Provides the SMS DTO with common attributes for sub classes.
@@ -47,58 +44,45 @@ public abstract class AbstractSendSMS extends AbstractConnector implements Conne
         SMSDTO dto = new SMSDTO();
         try {
             //Indicates SMS application service
-            dto.setServiceType((String) getParameter(messageContext, SMPPConstants.SERVICE_TYPE));
+            dto.setServiceType(getMediatorParameter(messageContext, SMPPConstants.SERVICE_TYPE, String.class, true));
             //Type of number for source address
-            dto.setSourceAddressTon((String) getParameter(messageContext,
-                    SMPPConstants.SOURCE_ADDRESS_TON));
+            dto.setSourceAddressTon(getMediatorParameter(messageContext,
+                    SMPPConstants.SOURCE_ADDRESS_TON, String.class, true));
             //Numbering plan indicator for source address
-            dto.setSourceAddressNpi((String) getParameter(messageContext,
-                    SMPPConstants.SOURCE_ADDRESS_NPI));
+            dto.setSourceAddressNpi(getMediatorParameter(messageContext,
+                    SMPPConstants.SOURCE_ADDRESS_NPI, String.class, true));
             //Used to define message mode and message type
-            dto.setEsmclass((String) getParameter(messageContext, SMPPConstants.ESM_CLASS));
+            dto.setEsmclass(getMediatorParameter(messageContext, SMPPConstants.ESM_CLASS, String.class, true));
             //protocol identifier
-            dto.setProtocolid((String) getParameter(messageContext, SMPPConstants.PROTOCOL_ID));
+            dto.setProtocolid(getMediatorParameter(messageContext, SMPPConstants.PROTOCOL_ID, String.class, true));
             //sets the priority of the message
-            dto.setPriorityflag((String) getParameter(messageContext, SMPPConstants.PRIORITY_FLAG));
+            dto.setPriorityflag(getMediatorParameter(messageContext, SMPPConstants.PRIORITY_FLAG, String.class, true));
             //Type of the SMSC delivery receipt
-            dto.setSmscDeliveryReceipt((String) getParameter(messageContext,
-                    SMPPConstants.SMSC_DELIVERY_RECEIPT));
+            dto.setSmscDeliveryReceipt(getMediatorParameter(messageContext,
+                    SMPPConstants.SMSC_DELIVERY_RECEIPT, String.class, true));
             //flag indicating if submitted message should replace an existing message
-            dto.setReplaceIfPresentFlag((String) getParameter(messageContext,
-                    SMPPConstants.REPLACE_IF_PRESENT_FLAG));
+            dto.setReplaceIfPresentFlag(getMediatorParameter(messageContext,
+                    SMPPConstants.REPLACE_IF_PRESENT_FLAG, String.class, true));
             //Alphabet used in the data encoding of the message
-            dto.setAlphabet((String) getParameter(messageContext, SMPPConstants.ALPHABET));
-            dto.setCharset((String) getParameter(messageContext, SMPPConstants.CHARSET));
-            dto.setMessageClass((String) getParameter(messageContext, SMPPConstants.MESSAGE_CLASS));
-            dto.setCompressed((String) getParameter(messageContext, SMPPConstants.IS_COMPRESSED));
+            dto.setAlphabet(getMediatorParameter(messageContext, SMPPConstants.ALPHABET, String.class, true));
+            dto.setCharset(getMediatorParameter(messageContext, SMPPConstants.CHARSET, String.class, true));
+            dto.setMessageClass(getMediatorParameter(messageContext, SMPPConstants.MESSAGE_CLASS, String.class, true));
+            dto.setCompressed(getMediatorParameter(messageContext, SMPPConstants.IS_COMPRESSED, String.class, true));
             //indicates short message to send from a predefined list of messages stored on SMSC
-            dto.setSubmitDefaultMsgId((String) getParameter(messageContext,
-                    SMPPConstants.SUBMIT_DEFAULT_MESSAGE_ID));
-            dto.setMessage((String) getParameter(messageContext, SMPPConstants.SMS_MESSAGE));
-            dto.setValidityPeriod((String) getParameter(messageContext, SMPPConstants.VALIDITY_PERIOD));
-            dto.setSourceAddress((String) getParameter(messageContext, SMPPConstants.SOURCE_ADDRESS));
-            dto.setScheduleDeliveryTime((String) getParameter(messageContext, SMPPConstants.SCHEDULE_DELIVERY_TIME));
+            dto.setSubmitDefaultMsgId(getMediatorParameter(messageContext,
+                    SMPPConstants.SUBMIT_DEFAULT_MESSAGE_ID, String.class, true));
+            dto.setMessage(getMediatorParameter(messageContext, SMPPConstants.SMS_MESSAGE, String.class, true));
+            dto.setValidityPeriod(
+                    getMediatorParameter(messageContext, SMPPConstants.VALIDITY_PERIOD, String.class, true));
+            dto.setSourceAddress(
+                    getMediatorParameter(messageContext, SMPPConstants.SOURCE_ADDRESS, String.class, true));
+            dto.setScheduleDeliveryTime(
+                    getMediatorParameter(messageContext, SMPPConstants.SCHEDULE_DELIVERY_TIME, String.class, true));
         } catch (ParseException e) {
             throw new ConfigurationException(e, "error while parsing schedule delivery time");
         }
 
         return dto;
-    }
-
-    /**
-     * Prepare payload is used to delete the element in existing body and add the new element.
-     *
-     * @param messageContext The message context that is used to prepare payload message flow.
-     * @param element        The OMElement that needs to be added in the body.
-     */
-    protected void preparePayload(MessageContext messageContext, OMElement element) {
-
-        SOAPBody soapBody = messageContext.getEnvelope().getBody();
-        for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
-            OMElement child = (OMElement) itr.next();
-            child.detach();
-        }
-        soapBody.addChild(element);
     }
 
     /**

@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.esb.connector.exceptions;
 
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.integration.connector.core.ConnectException;
 
 /**
  * Exception thrown upon configuration error.
