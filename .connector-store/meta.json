@@ -16,39 +16,411 @@
     ],
     "releases": [
         {
-            "tagName": "v2.0.0",
+            "tagName": "v2.0.1",
             "products": [
                 "MI 4.4.0"
             ],
             "operations": [
                 {
-                    "name": "init",
-                    "description": "Initialize SMSC configuration variables",
-                    "isHidden": true
+                    "name": "unbind",
+                    "description": "Unbind SMSC Connection",
+                    "params": [],
+                    "isHidden": false
                 },
                 {
                     "name": "sendSMS",
-                    "description": "Send SMS message",
+                    "description": "Send SMS",
+                    "params": [
+                        {
+                            "name": "sourceAddress",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Source address"
+                        },
+                        {
+                            "name": "destinationAddress",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Destination address of the short message"
+                        },
+                        {
+                            "name": "message",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Message to be sent"
+                        },
+                        {
+                            "name": "serviceType",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "SMS application service"
+                        },
+                        {
+                            "name": "sourceAddressTon",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Type of number for source address"
+                        },
+                        {
+                            "name": "sourceAddressNpi",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Numbering plan for source address"
+                        },
+                        {
+                            "name": "destinationAddressTon",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Type of number for destination"
+                        },
+                        {
+                            "name": "destinationAddressNpi",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Numbering plan for destination"
+                        },
+                        {
+                            "name": "alphabet",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Encoding scheme of the SMS message"
+                        },
+                        {
+                            "name": "charset",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Character encoding of the SMS message"
+                        },
+                        {
+                            "name": "smscDeliveryReceipt",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates if an SMSC delivery receipt or acknowledgment is required"
+                        },
+                        {
+                            "name": "scheduleDeliveryTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Scheduled time at which the message delivery should be first attempted"
+                        },
+                        {
+                            "name": "messageClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Type of the message"
+                        },
+                        {
+                            "name": "isCompressed",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Message body is compressed or not"
+                        },
+                        {
+                            "name": "esmclass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Messaging mode and message type"
+                        },
+                        {
+                            "name": "protocolid",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Protocol identifier of the SMSC protocol to be used"
+                        },
+                        {
+                            "name": "priorityflag",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Priority level of the message"
+                        },
+                        {
+                            "name": "replaceIfPresentFlag",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates whether an existing message should be replaced or not"
+                        },
+                        {
+                            "name": "submitDefaultMsgId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Message ID to be used for the submitted message"
+                        },
+                        {
+                            "name": "validityPeriod",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Time period during which an SMS message can be delivered"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned"
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
                     "isHidden": false
                 },
                 {
                     "name": "sendBulkSMS",
-                    "description": "Send Bulk SMS messages",
-                    "isHidden": false
-                },
-                {
-                    "name": "unbind",
-                    "description": "Unbind the SMSC connection",
+                    "description": "Send Bulk SMS",
+                    "params": [
+                        {
+                            "name": "sourceAddress",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Source address"
+                        },
+                        {
+                            "name": "destinationAddresses",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Destination addresses of the short message. Eg: {\"mobileNumbers\": [\"+94715XXXXXX\", \"+1434XXXXXX\"]}"
+                        },
+                        {
+                            "name": "message",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Content of the SMS message."
+                        },
+                        {
+                            "name": "serviceType",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates SMS application service. Default is empty string. Possible values are: \"CMT\", \"CPT\", \"VMN\", \"VMA\", \"WAP\", \"USSD\""
+                        },
+                        {
+                            "name": "sourceAddressTon",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Type of number for source address"
+                        },
+                        {
+                            "name": "sourceAddressNpi",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Numbering plan for source address"
+                        },
+                        {
+                            "name": "alphabet",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Encoding scheme of the SMS message"
+                        },
+                        {
+                            "name": "charset",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Character encoding of the SMS message"
+                        },
+                        {
+                            "name": "smscDeliveryReceipt",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates if an SMSC delivery receipt or acknowledgment is required"
+                        },
+                        {
+                            "name": "scheduleDeliveryTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Scheduled time at which the message delivery should be first attempted"
+                        },
+                        {
+                            "name": "messageClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Type of the message"
+                        },
+                        {
+                            "name": "isCompressed",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Message body is compressed or not"
+                        },
+                        {
+                            "name": "esmclass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates the messaging mode and message type"
+                        },
+                        {
+                            "name": "protocolid",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Protocol identifier of the SMSC protocol to be used"
+                        },
+                        {
+                            "name": "priorityflag",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Priority level of the message"
+                        },
+                        {
+                            "name": "replaceIfPresentFlag",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates whether an existing message should be replaced or not"
+                        },
+                        {
+                            "name": "submitDefaultMsgId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Message ID to be used for the submitted message"
+                        },
+                        {
+                            "name": "validityPeriod",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Time period during which an SMS message can be delivered"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned"
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
                     "isHidden": false
                 }
             ],
             "connections": [
                 {
                     "name": "SMPP",
-                    "description": "Connection for exchanging messages via SMPP protocol."
+                    "description": "SMPP",
+                    "params": [
+                        {
+                            "name": "connectionName",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "SMSC_CONFIG_1",
+                            "description": "Name of the SMSC Connection"
+                        },
+                        {
+                            "name": "host",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "localhost",
+                            "description": "Hostname of the SMSC"
+                        },
+                        {
+                            "name": "port",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "2775",
+                            "description": "Port to access the SMSC"
+                        },
+                        {
+                            "name": "systemId",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "User requesting to bind (username)"
+                        },
+                        {
+                            "name": "password",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Password to allow access"
+                        },
+                        {
+                            "name": "enquireLinkTimer",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "SMSC is connected or not"
+                        },
+                        {
+                            "name": "sessionBindTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "session binding timeout,max time to wait for a response after sending a bind request"
+                        },
+                        {
+                            "name": "transactionTimer",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Time elapsed between SMSC request and the corresponding response"
+                        },
+                        {
+                            "name": "systemType",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "System type"
+                        },
+                        {
+                            "name": "addressTon",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "User type of number"
+                        },
+                        {
+                            "name": "addressNpi",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Numbering plan indicator for user"
+                        }
+                    ]
                 }
-            ],
-            "isHidden": false
+            ]
         },
         {
             "tagName": "v1.1.4",
