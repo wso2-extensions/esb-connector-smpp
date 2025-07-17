@@ -109,12 +109,24 @@ jobs:
                       # Skip configRef parameter
                       if value.get('name') == 'configRef':
                           continue
+                      
+                      # Get base description
+                      description = value.get('helpTip', '')
+                      input_type = value.get('inputType', '')
+                      
+                      # If type contains "combo", append combo values to description
+                      if 'combo' in input_type.lower() and 'comboValues' in value:
+                          combo_values = value.get('comboValues', [])
+                          if combo_values:
+                              combo_text = f" Supported values: {', '.join(combo_values)}"
+                              description = description + combo_text if description else combo_text.strip()
+                      
                       params.append({
                           'name': value.get('name', ''),
-                          'type': value.get('inputType', ''),
+                          'type': input_type,
                           'required': value.get('required', '').lower() == 'true',
                           'defaultValue': value.get('defaultValue', ''),
-                          'description': value.get('helpTip', '')
+                          'description': description
                       })
                   
                   # Process attribute group
